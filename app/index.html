@@ -202,9 +202,14 @@
             <div id="cierres-section" class="section d-none">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2><i class="bi bi-clipboard-data me-2"></i>Cierres de Inventario</h2>
-                    <button class="btn btn-primary" onclick="openCierreModal()">
-                        <i class="bi bi-plus-circle me-2"></i>Nuevo Cierre
-                    </button>
+                    <div>
+                        <button class="btn btn-success me-2" onclick="openReportModal()">
+                            <i class="bi bi-file-earmark-pdf me-2"></i>Generar Reporte PDF
+                        </button>
+                        <button class="btn btn-primary" onclick="openCierreModal()">
+                            <i class="bi bi-plus-circle me-2"></i>Nuevo Cierre
+                        </button>
+                    </div>
                 </div>
 
                 <div class="card">
@@ -311,6 +316,36 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="button" class="btn btn-primary" onclick="saveCierre()">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Reporte PDF -->
+    <div class="modal fade" id="reportModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Generar Reporte PDF de Cierres de Inventario</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="reportForm">
+                        <div class="mb-3">
+                            <label for="fechaInicio" class="form-label">Fecha de Inicio *</label>
+                            <input type="date" class="form-control" id="fechaInicio" name="fecha_inicio" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fechaFin" class="form-label">Fecha de Fin *</label>
+                            <input type="date" class="form-control" id="fechaFin" name="fecha_fin" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" onclick="generatePDFReport()">
+                        <i class="bi bi-file-earmark-pdf me-2"></i>Generar y Descargar PDF
+                    </button>
                 </div>
             </div>
         </div>
@@ -663,6 +698,48 @@
                     });
                 }
             });
+        }
+
+        // Abrir modal de reporte
+        function openReportModal() {
+            const today = new Date().toISOString().split('T')[0];
+            $('#fechaInicio').val(today);
+            $('#fechaFin').val(today);
+            $('#reportModal').modal('show');
+        }
+
+        // Generar y descargar reporte PDF
+        function generatePDFReport() {
+            const fechaInicio = $('#fechaInicio').val();
+            const fechaFin = $('#fechaFin').val();
+
+            if (!fechaInicio || !fechaFin) {
+                Swal.fire('Error', 'Por favor selecciona ambas fechas', 'error');
+                return;
+            }
+
+            if (fechaInicio > fechaFin) {
+                Swal.fire('Error', 'La fecha de inicio no puede ser mayor a la fecha de fin', 'error');
+                return;
+            }
+
+            // Crear URL con parámetros de consulta
+            const url = `${API_BASE_URL}/cierre_inventario/report?fecha_inicio=${fechaInicio}&fecha_fin=${fechaFin}`;
+
+            // Crear un enlace temporal para descargar el PDF
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `reporte_cierres_${fechaInicio}_${fechaFin}.pdf`;
+            link.target = '_blank';
+
+            // Agregar el enlace al DOM y hacer clic
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            $('#reportModal').modal('hide');
+
+            Swal.fire('Éxito', 'El reporte PDF se está descargando', 'success');
         }
     </script>
 </body>

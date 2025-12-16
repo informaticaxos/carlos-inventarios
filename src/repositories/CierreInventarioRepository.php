@@ -44,13 +44,36 @@ class CierreInventarioRepository {
         return $cierre->delete();
     }
 
-    public function getReport() {
+    public function getReport($fechaInicio = null, $fechaFin = null) {
         $query = "SELECT ci.fecha, p.nombre_producto, p.unidad_medida_producto, p.categoria_producto, ci.cantidad
                   FROM cierre_inventario ci
-                  INNER JOIN producto p ON ci.fk_id_producto = p.id_producto
-                  ORDER BY ci.fecha DESC";
+                  INNER JOIN producto p ON ci.fk_id_producto = p.id_producto";
+
+        $conditions = array();
+        $params = array();
+
+        if ($fechaInicio) {
+            $conditions[] = "ci.fecha >= :fecha_inicio";
+            $params[':fecha_inicio'] = $fechaInicio;
+        }
+
+        if ($fechaFin) {
+            $conditions[] = "ci.fecha <= :fecha_fin";
+            $params[':fecha_fin'] = $fechaFin;
+        }
+
+        if (!empty($conditions)) {
+            $query .= " WHERE " . implode(" AND ", $conditions);
+        }
+
+        $query .= " ORDER BY ci.fecha DESC";
 
         $stmt = $this->conn->prepare($query);
+
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+
         $stmt->execute();
 
         return $stmt;
