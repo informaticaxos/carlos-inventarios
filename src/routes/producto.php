@@ -52,8 +52,14 @@ $uri = explode('/', $uri);
 // DELETE /api/producto/{id} - Eliminar un producto
 // Ejemplo en Postman: DELETE https://nestorcornejo.com/carlos-inventarios/api/producto/1
 
+// GET /api/producto/report - Generar reporte PDF de productos
+// Ejemplo en Postman: GET https://nestorcornejo.com/carlos-inventarios/api/producto/report
+// Respuesta: Archivo PDF descargable
+
 if ($request_method === 'GET') {
-    if (isset($uri[4]) && is_numeric($uri[4])) {
+    if (isset($uri[4]) && $uri[4] === 'report') {
+        $controller->getReport();
+    } elseif (isset($uri[4]) && is_numeric($uri[4])) {
         $controller->getById($uri[4]);
     } else {
         $controller->getAll();
