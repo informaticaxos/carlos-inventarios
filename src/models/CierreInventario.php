@@ -81,19 +81,19 @@ class CierreInventario {
     }
 
     public function update() {
-        $query = "UPDATE " . $this->table_name . " SET fk_id_producto = :fk_id_producto, fecha = :fecha, cantidad = :cantidad WHERE id_cierre_invetarios = :id_cierre_invetarios";
+        $query = "UPDATE " . $this->table_name . " SET fk_id_producto = :fk_id_producto, fecha = :fecha, cantidad = :cantidad WHERE id_cierre_inventario = :id_cierre_inventario";
 
         $stmt = $this->conn->prepare($query);
 
         $this->fk_id_producto = htmlspecialchars(strip_tags($this->fk_id_producto));
         $this->fecha = htmlspecialchars(strip_tags($this->fecha));
         $this->cantidad = htmlspecialchars(strip_tags($this->cantidad));
-        $this->id_cierre_invetarios = htmlspecialchars(strip_tags($this->id_cierre_invetarios));
+        $this->id_cierre_inventario = htmlspecialchars(strip_tags($this->id_cierre_inventario));
 
         $stmt->bindParam(':fk_id_producto', $this->fk_id_producto);
         $stmt->bindParam(':fecha', $this->fecha);
         $stmt->bindParam(':cantidad', $this->cantidad);
-        $stmt->bindParam(':id_cierre_invetarios', $this->id_cierre_invetarios);
+        $stmt->bindParam(':id_cierre_inventario', $this->id_cierre_inventario);
 
         if($stmt->execute()) {
             return true;
