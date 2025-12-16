@@ -157,37 +157,29 @@ class CierreInventarioController {
         $num = $stmt->rowCount();
 
         if($num > 0) {
-            // Incluir TCPDF
-            require_once '../vendor/tecnickcom/tcpdf/tcpdf.php';
+            // Usar FPDF para generar el PDF (librería más simple)
+            require_once '../libs/fpdf/fpdf.php';
 
-            // Crear nuevo documento PDF
-            $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+            class PDF extends FPDF {
+                function Header() {
+                    $this->SetFont('Arial','B',15);
+                    $this->Cell(0,10,'Reporte de Cierres de Inventario',0,1,'C');
+                    $this->Ln(5);
+                }
 
-            // Configurar documento
-            $pdf->SetCreator(PDF_CREATOR);
-            $pdf->SetAuthor('Sistema de Inventarios');
-            $pdf->SetTitle('Reporte de Cierres de Inventario');
-            $pdf->SetSubject('Reporte PDF');
-            $pdf->SetKeywords('Inventario, Reporte, PDF');
+                function Footer() {
+                    $this->SetY(-15);
+                    $this->SetFont('Arial','I',8);
+                    $this->Cell(0,10,'Página '.$this->PageNo().'/{nb}',0,0,'C');
+                }
+            }
 
-            // Configurar márgenes
-            $pdf->SetMargins(15, 20, 15);
-            $pdf->SetHeaderMargin(10);
-            $pdf->SetFooterMargin(10);
-
-            // Configurar auto page breaks
-            $pdf->SetAutoPageBreak(TRUE, 15);
-
-            // Agregar página
+            $pdf = new PDF();
+            $pdf->AliasNbPages();
             $pdf->AddPage();
-
-            // Título
-            $pdf->SetFont('helvetica', 'B', 16);
-            $pdf->Cell(0, 10, 'Reporte de Cierres de Inventario', 0, 1, 'C');
-            $pdf->Ln(5);
+            $pdf->SetFont('Arial','',12);
 
             // Fechas del reporte
-            $pdf->SetFont('helvetica', '', 12);
             if ($fechaInicio && $fechaFin) {
                 $pdf->Cell(0, 8, 'Período: ' . date('d/m/Y', strtotime($fechaInicio)) . ' - ' . date('d/m/Y', strtotime($fechaFin)), 0, 1, 'C');
             } elseif ($fechaInicio) {
@@ -202,30 +194,30 @@ class CierreInventarioController {
             $pdf->Ln(10);
 
             // Encabezados de tabla
-            $pdf->SetFont('helvetica', 'B', 10);
-            $pdf->SetFillColor(240, 240, 240);
-            $pdf->Cell(25, 8, 'Fecha', 1, 0, 'C', 1);
-            $pdf->Cell(60, 8, 'Producto', 1, 0, 'C', 1);
-            $pdf->Cell(25, 8, 'Unidad', 1, 0, 'C', 1);
-            $pdf->Cell(40, 8, 'Categoría', 1, 0, 'C', 1);
-            $pdf->Cell(30, 8, 'Cantidad', 1, 1, 'C', 1);
+            $pdf->SetFont('Arial','B',10);
+            $pdf->SetFillColor(200,220,255);
+            $pdf->Cell(25, 8, 'Fecha', 1, 0, 'C', true);
+            $pdf->Cell(60, 8, 'Producto', 1, 0, 'C', true);
+            $pdf->Cell(25, 8, 'Unidad', 1, 0, 'C', true);
+            $pdf->Cell(40, 8, 'Categoría', 1, 0, 'C', true);
+            $pdf->Cell(30, 8, 'Cantidad', 1, 1, 'C', true);
 
             // Datos de la tabla
-            $pdf->SetFont('helvetica', '', 9);
+            $pdf->SetFont('Arial','',9);
             $fill = false;
 
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $pdf->Cell(25, 6, date('d/m/Y', strtotime($row['fecha'])), 1, 0, 'C', $fill);
-                $pdf->Cell(60, 6, $row['nombre_producto'], 1, 0, 'L', $fill);
-                $pdf->Cell(25, 6, $row['unidad_medida_producto'], 1, 0, 'C', $fill);
-                $pdf->Cell(40, 6, $row['categoria_producto'], 1, 0, 'L', $fill);
+                $pdf->Cell(60, 6, utf8_decode($row['nombre_producto']), 1, 0, 'L', $fill);
+                $pdf->Cell(25, 6, utf8_decode($row['unidad_medida_producto']), 1, 0, 'C', $fill);
+                $pdf->Cell(40, 6, utf8_decode($row['categoria_producto']), 1, 0, 'L', $fill);
                 $pdf->Cell(30, 6, number_format($row['cantidad'], 2), 1, 1, 'R', $fill);
                 $fill = !$fill;
             }
 
             // Total de registros
             $pdf->Ln(5);
-            $pdf->SetFont('helvetica', 'B', 10);
+            $pdf->SetFont('Arial','B',10);
             $pdf->Cell(0, 8, 'Total de registros: ' . $num, 0, 1, 'L');
 
             // Configurar headers para descarga
@@ -235,7 +227,7 @@ class CierreInventarioController {
             header('Pragma: public');
 
             // Generar y enviar PDF
-            $pdf->Output('reporte_cierres_' . date('Y-m-d') . '.pdf', 'D');
+            $pdf->Output('D', 'reporte_cierres_' . date('Y-m-d') . '.pdf');
             exit;
         } else {
             http_response_code(404);
