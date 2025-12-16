@@ -13,10 +13,34 @@ class CierreInventario {
         $this->conn = $db;
     }
 
-    public function read() {
-        $query = "SELECT id_cierre_invetarios, fk_id_producto, fecha, cantidad FROM " . $this->table_name . " ORDER BY fecha DESC";
+    public function read($fechaInicio = null, $fechaFin = null) {
+        $query = "SELECT id_cierre_invetarios, fk_id_producto, fecha, cantidad FROM " . $this->table_name;
+
+        $conditions = array();
+        $params = array();
+
+        if ($fechaInicio !== null) {
+            $conditions[] = "fecha >= :fecha_inicio";
+            $params[':fecha_inicio'] = $fechaInicio;
+        }
+
+        if ($fechaFin !== null) {
+            $conditions[] = "fecha <= :fecha_fin";
+            $params[':fecha_fin'] = $fechaFin;
+        }
+
+        if (!empty($conditions)) {
+            $query .= " WHERE " . implode(" AND ", $conditions);
+        }
+
+        $query .= " ORDER BY fecha DESC";
 
         $stmt = $this->conn->prepare($query);
+
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+
         $stmt->execute();
 
         return $stmt;

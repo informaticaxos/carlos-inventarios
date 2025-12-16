@@ -53,7 +53,9 @@ $uri = explode('/', $uri);
 // Ejemplo en Postman: DELETE https://nestorcornejo.com/carlos-inventarios/api/cierre_inventario/1
 
 if ($request_method === 'GET') {
-    if (isset($uri[4]) && is_numeric($uri[4])) {
+    if (isset($uri[4]) && $uri[4] === 'report') {
+        $controller->getReport();
+    } elseif (isset($uri[4]) && is_numeric($uri[4])) {
         $controller->getById($uri[4]);
     } else {
         $controller->getAll();

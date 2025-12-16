@@ -10,7 +10,10 @@ class CierreInventarioController {
     }
 
     public function getAll() {
-        $stmt = $this->repository->getAll();
+        $fechaInicio = isset($_GET['fecha_inicio']) ? $_GET['fecha_inicio'] : null;
+        $fechaFin = isset($_GET['fecha_fin']) ? $_GET['fecha_fin'] : null;
+
+        $stmt = $this->repository->getAll($fechaInicio, $fechaFin);
         $num = $stmt->rowCount();
 
         if($num > 0) {
@@ -142,6 +145,41 @@ class CierreInventarioController {
                 "state" => 0,
                 "message" => "Error al eliminar el cierre de inventario",
                 "data" => null
+            ));
+        }
+    }
+
+    public function getReport() {
+        $stmt = $this->repository->getReport();
+        $num = $stmt->rowCount();
+
+        if($num > 0) {
+            $report_arr = array();
+
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                extract($row);
+                $report_item = array(
+                    "fecha" => $fecha,
+                    "producto" => $nombre_producto,
+                    "unidad_medida" => $unidad_medida_producto,
+                    "categoria" => $categoria_producto,
+                    "cantidad" => $cantidad
+                );
+                array_push($report_arr, $report_item);
+            }
+
+            http_response_code(200);
+            echo json_encode(array(
+                "state" => 1,
+                "message" => "Reporte de cierres de inventario obtenido correctamente",
+                "data" => $report_arr
+            ));
+        } else {
+            http_response_code(404);
+            echo json_encode(array(
+                "state" => 0,
+                "message" => "No se encontraron datos para el reporte",
+                "data" => array()
             ));
         }
     }
