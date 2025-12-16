@@ -85,21 +85,34 @@ class CierreInventario {
 
         $stmt = $this->conn->prepare($query);
 
+        // Clean the input data
         $this->fk_id_producto = htmlspecialchars(strip_tags($this->fk_id_producto));
         $this->fecha = htmlspecialchars(strip_tags($this->fecha));
         $this->cantidad = htmlspecialchars(strip_tags($this->cantidad));
         $this->id_cierre_invetarios = htmlspecialchars(strip_tags($this->id_cierre_invetarios));
 
+        // Bind parameters
         $stmt->bindParam(':fk_id_producto', $this->fk_id_producto);
         $stmt->bindParam(':fecha', $this->fecha);
         $stmt->bindParam(':cantidad', $this->cantidad);
         $stmt->bindParam(':id_cierre_invetarios', $this->id_cierre_invetarios);
 
+        // Execute and check for errors
         if($stmt->execute()) {
-            return true;
+            // Check if any rows were affected
+            if($stmt->rowCount() > 0) {
+                return true;
+            } else {
+                // No rows affected - record might not exist
+                error_log("Update failed: No rows affected for id_cierre_invetarios = " . $this->id_cierre_invetarios);
+                return false;
+            }
+        } else {
+            // Log the error
+            $errorInfo = $stmt->errorInfo();
+            error_log("Update failed: " . $errorInfo[2]);
+            return false;
         }
-
-        return false;
     }
 
     public function delete() {
