@@ -22,8 +22,14 @@ $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $uri = explode('/', $uri);
 
 // GET /api/cierre_inventario - Obtener todos los cierres de inventario
-// Ejemplo en Postman: GET https://nestorcornejo.com/carlos-inventarios/api/cierre_inventario
-// Respuesta: JSON con array de cierres de inventario
+// Parámetros de consulta opcionales:
+//   - fecha_inicio: Fecha de inicio para filtrar (formato YYYY-MM-DD)
+//   - fecha_fin: Fecha de fin para filtrar (formato YYYY-MM-DD)
+// Ejemplos en Postman:
+//   - Sin filtros: GET https://nestorcornejo.com/carlos-inventarios/api/cierre_inventario
+//   - Con fecha inicio: GET https://nestorcornejo.com/carlos-inventarios/api/cierre_inventario?fecha_inicio=2024-01-01
+//   - Con rango de fechas: GET https://nestorcornejo.com/carlos-inventarios/api/cierre_inventario?fecha_inicio=2024-01-01&fecha_fin=2024-01-31
+// Respuesta: JSON con array de cierres de inventario filtrados por fecha
 
 // GET /api/cierre_inventario/{id} - Obtener un cierre específico
 // Ejemplo en Postman: GET https://nestorcornejo.com/carlos-inventarios/api/cierre_inventario/1
