@@ -147,7 +147,7 @@ class ProductoController {
     }
 
     public function getReport() {
-        $stmt = $this->repository->getAll();
+        $stmt = $this->repository->getReport();
         $num = $stmt->rowCount();
 
         if($num > 0) {
