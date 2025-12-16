@@ -40,7 +40,7 @@ class CierreInventarioRepository {
 
     public function delete($id) {
         $cierre = new CierreInventario($this->conn);
-        $cierre->id_cierre_invetarios = $id;
+        $cierre->id_cierre_inventario = $id;
         return $cierre->delete();
     }
 
