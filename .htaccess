@@ -1,0 +1,12 @@
+RewriteEngine On
+
+# Handle API routes
+RewriteRule ^api/producto/?$ src/routes/producto.php [L]
+RewriteRule ^api/producto/([0-9]+)/?$ src/routes/producto.php?id=$1 [L]
+RewriteRule ^api/cierre_inventario/?$ src/routes/cierre_inventario.php [L]
+RewriteRule ^api/cierre_inventario/([0-9]+)/?$ src/routes/cierre_inventario.php?id=$1 [L]
+
+# Handle other static files
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . index.html [L]
