@@ -43,5 +43,10 @@ class ProductoRepository {
         $producto->id_producto = $id;
         return $producto->delete();
     }
+
+    public function getReport() {
+        $producto = new Producto($this->conn);
+        return $producto->read();
+    }
 }
 ?>

@@ -49,9 +49,9 @@ class CierreInventarioController {
     public function getById($id) {
         $cierre = $this->repository->getById($id);
 
-        if($cierre->id_cierre_invetarios != null) {
+        if($cierre->id_cierre_inventario != null) {
             $cierre_arr = array(
-                "id_cierre_invetarios" => $cierre->id_cierre_invetarios,
+                "id_cierre_inventario" => $cierre->id_cierre_inventario,
                 "fk_id_producto" => $cierre->fk_id_producto,
                 "fecha" => $cierre->fecha,
                 "cantidad" => $cierre->cantidad

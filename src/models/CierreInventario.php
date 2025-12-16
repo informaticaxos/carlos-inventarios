@@ -4,7 +4,7 @@ class CierreInventario {
     private $conn;
     private $table_name = "cierre_inventario";
 
-    public $id_cierre_invetarios;
+    public $id_cierre_inventario;
     public $fk_id_producto;
     public $fecha;
     public $cantidad;
@@ -14,7 +14,7 @@ class CierreInventario {
     }
 
     public function read($fechaInicio = null, $fechaFin = null) {
-        $query = "SELECT id_cierre_invetarios, fk_id_producto, fecha, cantidad FROM " . $this->table_name;
+        $query = "SELECT id_cierre_inventario, fk_id_producto, fecha, cantidad FROM " . $this->table_name;
 
         $conditions = array();
         $params = array();
@@ -67,10 +67,10 @@ class CierreInventario {
     }
 
     public function readOne() {
-        $query = "SELECT id_cierre_invetarios, fk_id_producto, fecha, cantidad FROM " . $this->table_name . " WHERE id_cierre_invetarios = ? LIMIT 0,1";
+        $query = "SELECT id_cierre_inventario, fk_id_producto, fecha, cantidad FROM " . $this->table_name . " WHERE id_cierre_inventario = ? LIMIT 0,1";
 
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(1, $this->id_cierre_invetarios);
+        $stmt->bindParam(1, $this->id_cierre_inventario);
         $stmt->execute();
 
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -103,11 +103,11 @@ class CierreInventario {
     }
 
     public function delete() {
-        $query = "DELETE FROM " . $this->table_name . " WHERE id_cierre_invetarios = ?";
+        $query = "DELETE FROM " . $this->table_name . " WHERE id_cierre_inventario = ?";
 
         $stmt = $this->conn->prepare($query);
-        $this->id_cierre_invetarios = htmlspecialchars(strip_tags($this->id_cierre_invetarios));
-        $stmt->bindParam(1, $this->id_cierre_invetarios);
+        $this->id_cierre_inventario = htmlspecialchars(strip_tags($this->id_cierre_inventario));
+        $stmt->bindParam(1, $this->id_cierre_inventario);
 
         if($stmt->execute()) {
             return true;
