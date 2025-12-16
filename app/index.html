@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Sistema de Inventarios</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.27/dist/sweetalert2.min.css">
+    <style>
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s;
+        }
+        .sidebar .nav-link:hover {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .sidebar .nav-link.active {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .content-wrapper {
+            margin-left: 0;
+        }
+        @media (min-width: 768px) {
+            .content-wrapper {
+                margin-left: 250px;
+            }
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        }
+        .table-responsive {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar d-md-block collapse" id="sidebar">
+        <div class="sidebar-sticky">
+            <div class="p-4">
+                <h4 class="text-white mb-4">
+                    <i class="bi bi-box-seam me-2"></i>
+                    Inventarios
+                </h4>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" onclick="showSection('productos')">
+                            <i class="bi bi-box me-2"></i>
+                            Productos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('cierres')">
+                            <i class="bi bi-clipboard-data me-2"></i>
+                            Cierres de Inventario
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="content-wrapper">
+        <!-- Header -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+            <div class="container-fluid">
+                <button class="btn btn-outline-secondary d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar">
+                    <i class="bi bi-list"></i>
+                </button>
+                <span class="navbar-brand mb-0 h1">Sistema de Inventarios</span>
+            </div>
+        </nav>
+
+        <!-- Content -->
+        <div class="container-fluid p-4">
+            <!-- Productos Section -->
+            <div id="productos-section" class="section">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2><i class="bi bi-box me-2"></i>Gestión de Productos</h2>
+                    <button class="btn btn-primary" onclick="openProductoModal()">
+                        <i class="bi bi-plus-circle me-2"></i>Nuevo Producto
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="productosTable" class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nombre</th>
+                                        <th>Unidad de Medida</th>
+                                        <th>Categoría</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cierres Section -->
+            <div id="cierres-section" class="section d-none">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2><i class="bi bi-clipboard-data me-2"></i>Cierres de Inventario</h2>
+                    <button class="btn btn-primary" onclick="openCierreModal()">
+                        <i class="bi bi-plus-circle me-2"></i>Nuevo Cierre
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="cierresTable" class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Producto</th>
+                                        <th>Fecha</th>
+                                        <th>Cantidad</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Producto -->
+    <div class="modal fade" id="productoModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="productoModalTitle">Nuevo Producto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="productoForm">
+                        <input type="hidden" id="productoId" name="id">
+                        <div class="mb-3">
+                            <label for="nombreProducto" class="form-label">Nombre del Producto *</label>
+                            <input type="text" class="form-control" id="nombreProducto" name="nombre_producto" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="unidadMedida" class="form-label">Unidad de Medida *</label>
+                            <input type="text" class="form-control" id="unidadMedida" name="unidad_medida_producto" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="categoriaProducto" class="form-label">Categoría *</label>
+                            <input type="text" class="form-control" id="categoriaProducto" name="categoria_producto" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="saveProducto()">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Cierre -->
+    <div class="modal fade" id="cierreModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cierreModalTitle">Nuevo Cierre de Inventario</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="cierreForm">
+                        <input type="hidden" id="cierreId" name="id">
+                        <div class="mb-3">
+                            <label for="productoSelect" class="form-label">Producto *</label>
+                            <select class="form-control" id="productoSelect" name="fk_id_producto" required>
+                                <option value="">Seleccione un producto</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fechaCierre" class="form-label">Fecha *</label>
+                            <input type="date" class="form-control" id="fechaCierre" name="fecha" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cantidadCierre" class="form-label">Cantidad *</label>
+                            <input type="number" step="0.01" class="form-control" id="cantidadCierre" name="cantidad" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="saveCierre()">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.27/dist/sweetalert2.all.min.js"></script>
+
+    <script>
+        // API Base URL - Cambia esto por tu URL real cuando despliegues
+        const API_BASE_URL = 'http://localhost/carlos-inventarios/api';
+
+        // Variables globales
+        let productosTable;
+        let cierresTable;
+        let productos = [];
+
+        // Inicializar cuando el documento esté listo
+        $(document).ready(function() {
+            initializeDataTables();
+            loadProductos();
+            loadCierres();
+            loadProductosForSelect();
+        });
+
+        // Inicializar DataTables
+        function initializeDataTables() {
+            productosTable = $('#productosTable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+                },
+                responsive: true,
+                columns: [
+                    { data: 'id_producto' },
+                    { data: 'nombre_producto' },
+                    { data: 'unidad_medida_producto' },
+                    { data: 'categoria_producto' },
+                    {
+                        data: null,
+                        render: function(data, type, row) {
+                            return `
+                                <button class="btn btn-sm btn-warning me-1" onclick="editProducto(${row.id_producto})">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteProducto(${row.id_producto})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            `;
+                        }
+                    }
+                ]
+            });
+
+            cierresTable = $('#cierresTable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+                },
+                responsive: true,
+                columns: [
+                    { data: 'id_cierre_invetarios' },
+                    {
+                        data: null,
+                        render: function(data, type, row) {
+                            const producto = productos.find(p => p.id_producto == row.fk_id_producto);
+                            return producto ? producto.nombre_producto : 'Producto no encontrado';
+                        }
+                    },
+                    { data: 'fecha' },
+                    { data: 'cantidad' },
+                    {
+                        data: null,
+                        render: function(data, type, row) {
+                            return `
+                                <button class="btn btn-sm btn-warning me-1" onclick="editCierre(${row.id_cierre_invetarios})">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteCierre(${row.id_cierre_invetarios})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            `;
+                        }
+                    }
+                ]
+            });
+        }
+
+        // Cambiar entre secciones
+        function showSection(section) {
+            $('.section').addClass('d-none');
+            $(`#${section}-section`).removeClass('d-none');
+
+            $('.nav-link').removeClass('active');
+            $(`.nav-link[onclick*="${section}"]`).addClass('active');
+        }
+
+        // Cargar productos
+        function loadProductos() {
+            $.ajax({
+                url: `${API_BASE_URL}/producto`,
+                method: 'GET',
+                success: function(response) {
+                    if (response.state === 1) {
+                        productos = response.data;
+                        productosTable.clear().rows.add(response.data).draw();
+                    } else {
+                        Swal.fire('Error', response.message, 'error');
+                    }
+                },
+                error: function() {
+                    Swal.fire('Error', 'No se pudieron cargar los productos', 'error');
+                }
+            });
+        }
+
+        // Cargar cierres
+        function loadCierres() {
+            $.ajax({
+                url: `${API_BASE_URL}/cierre_inventario`,
+                method: 'GET',
+                success: function(response) {
+                    if (response.state === 1) {
+                        cierresTable.clear().rows.add(response.data).draw();
+                    } else {
+                        Swal.fire('Error', response.message, 'error');
+                    }
+                },
+                error: function() {
+                    Swal.fire('Error', 'No se pudieron cargar los cierres de inventario', 'error');
+                }
+            });
+        }
+
+        // Cargar productos para el select
+        function loadProductosForSelect() {
+            $.ajax({
+                url: `${API_BASE_URL}/producto`,
+                method: 'GET',
+                success: function(response) {
+                    if (response.state === 1) {
+                        productos = response.data;
+                        const select = $('#productoSelect');
+                        select.empty();
+                        select.append('<option value="">Seleccione un producto</option>');
+                        response.data.forEach(producto => {
+                            select.append(`<option value="${producto.id_producto}">${producto.nombre_producto}</option>`);
+                        });
+                    }
+                }
+            });
+        }
+
+        // Abrir modal de producto
+        function openProductoModal(producto = null) {
+            if (producto) {
+                $('#productoModalTitle').text('Editar Producto');
+                $('#productoId').val(producto.id_producto);
+                $('#nombreProducto').val(producto.nombre_producto);
+                $('#unidadMedida').val(producto.unidad_medida_producto);
+                $('#categoriaProducto').val(producto.categoria_producto);
+            } else {
+                $('#productoModalTitle').text('Nuevo Producto');
+                $('#productoForm')[0].reset();
+                $('#productoId').val('');
+            }
+            $('#productoModal').modal('show');
+        }
+
+        // Abrir modal de cierre
+        function openCierreModal(cierre = null) {
+            if (cierre) {
+                $('#cierreModalTitle').text('Editar Cierre de Inventario');
+                $('#cierreId').val(cierre.id_cierre_invetarios);
+                $('#productoSelect').val(cierre.fk_id_producto);
+                $('#fechaCierre').val(cierre.fecha);
+                $('#cantidadCierre').val(cierre.cantidad);
+            } else {
+                $('#cierreModalTitle').text('Nuevo Cierre de Inventario');
+                $('#cierreForm')[0].reset();
+                $('#cierreId').val('');
+            }
+            $('#cierreModal').modal('show');
+        }
+
+        // Guardar producto
+        function saveProducto() {
+            const formData = {
+                nombre_producto: $('#nombreProducto').val(),
+                unidad_medida_producto: $('#unidadMedida').val(),
+                categoria_producto: $('#categoriaProducto').val()
+            };
+
+            const productoId = $('#productoId').val();
+            const method = productoId ? 'PUT' : 'POST';
+            const url = productoId ? `${API_BASE_URL}/producto/${productoId}` : `${API_BASE_URL}/producto`;
+
+            $.ajax({
+                url: url,
+                method: method,
+                contentType: 'application/json',
+                data: JSON.stringify(formData),
+                success: function(response) {
+                    if (response.state === 1) {
+                        Swal.fire('Éxito', response.message, 'success');
+                        $('#productoModal').modal('hide');
+                        loadProductos();
+                        loadProductosForSelect();
+                    } else {
+                        Swal.fire('Error', response.message, 'error');
+                    }
+                },
+                error: function() {
+                    Swal.fire('Error', 'No se pudo guardar el producto', 'error');
+                }
+            });
+        }
+
+        // Guardar cierre
+        function saveCierre() {
+            const formData = {
+                fk_id_producto: $('#productoSelect').val(),
+                fecha: $('#fechaCierre').val(),
+                cantidad: $('#cantidadCierre').val()
+            };
+
+            const cierreId = $('#cierreId').val();
+            const method = cierreId ? 'PUT' : 'POST';
+            const url = cierreId ? `${API_BASE_URL}/cierre_inventario/${cierreId}` : `${API_BASE_URL}/cierre_inventario`;
+
+            $.ajax({
+                url: url,
+                method: method,
+                contentType: 'application/json',
+                data: JSON.stringify(formData),
+                success: function(response) {
+                    if (response.state === 1) {
+                        Swal.fire('Éxito', response.message, 'success');
+                        $('#cierreModal').modal('hide');
+                        loadCierres();
+                    } else {
+                        Swal.fire('Error', response.message, 'error');
+                    }
+                },
+                error: function() {
+                    Swal.fire('Error', 'No se pudo guardar el cierre de inventario', 'error');
+                }
+            });
+        }
+
+        // Editar producto
+        function editProducto(id) {
+            const producto = productos.find(p => p.id_producto == id);
+            if (producto) {
+                openProductoModal(producto);
+            }
+        }
+
+        // Editar cierre
+        function editCierre(id) {
+            $.ajax({
+                url: `${API_BASE_URL}/cierre_inventario/${id}`,
+                method: 'GET',
+                success: function(response) {
+                    if (response.state === 1) {
+                        openCierreModal(response.data);
+                    }
+                }
+            });
+        }
+
+        // Eliminar producto
+        function deleteProducto(id) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: 'Esta acción no se puede deshacer',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: `${API_BASE_URL}/producto/${id}`,
+                        method: 'DELETE',
+                        success: function(response) {
+                            if (response.state === 1) {
+                                Swal.fire('Eliminado', response.message, 'success');
+                                loadProductos();
+                                loadProductosForSelect();
+                                loadCierres(); // Recargar cierres porque pueden estar relacionados
+                            } else {
+                                Swal.fire('Error', response.message, 'error');
+                            }
+                        },
+                        error: function() {
+                            Swal.fire('Error', 'No se pudo eliminar el producto', 'error');
+                        }
+                    });
+                }
+            });
+        }
+
+        // Eliminar cierre
+        function deleteCierre(id) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: 'Esta acción no se puede deshacer',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: `${API_BASE_URL}/cierre_inventario/${id}`,
+                        method: 'DELETE',
+                        success: function(response) {
+                            if (response.state === 1) {
+                                Swal.fire('Eliminado', response.message, 'success');
+                                loadCierres();
+                            } else {
+                                Swal.fire('Error', response.message, 'error');
+                            }
+                        },
+                        error: function() {
+                            Swal.fire('Error', 'No se pudo eliminar el cierre de inventario', 'error');
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+</body>
+</html>
