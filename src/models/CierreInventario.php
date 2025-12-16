@@ -85,11 +85,11 @@ class CierreInventario {
 
         $stmt = $this->conn->prepare($query);
 
-        // Clean the input data
+        // Clean the input data (don't clean ID as it's used in WHERE clause)
         $this->fk_id_producto = htmlspecialchars(strip_tags($this->fk_id_producto));
         $this->fecha = htmlspecialchars(strip_tags($this->fecha));
         $this->cantidad = htmlspecialchars(strip_tags($this->cantidad));
-        $this->id_cierre_invetarios = htmlspecialchars(strip_tags($this->id_cierre_invetarios));
+        // Keep ID as is for WHERE clause
 
         // Bind parameters
         $stmt->bindParam(':fk_id_producto', $this->fk_id_producto);
