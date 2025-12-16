@@ -16,7 +16,7 @@ class CierreInventarioRepository {
 
     public function getById($id) {
         $cierre = new CierreInventario($this->conn);
-        $cierre->id_cierre_inventario = (int)$id;
+        $cierre->id_cierre_invetarios = (int)$id;
         $cierre->readOne();
         return $cierre;
     }

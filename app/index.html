@@ -419,7 +419,7 @@
                 },
                 responsive: true,
                 columns: [
-                    { data: 'id_cierre_inventario' },
+                    { data: 'id_cierre_inventarios' },
                     {
                         data: null,
                         render: function(data, type, row) {
@@ -433,10 +433,10 @@
                         data: null,
                         render: function(data, type, row) {
                             return `
-                                <button class="btn btn-sm btn-warning me-1" onclick="editCierre(${row.id_cierre_inventario})">
+                                <button class="btn btn-sm btn-warning me-1" onclick="editCierre(${row.id_cierre_inventarios})">
                                     <i class="bi bi-pencil"></i>
                                 </button>
-                                <button class="btn btn-sm btn-danger" onclick="deleteCierre(${row.id_cierre_inventario})">
+                                <button class="btn btn-sm btn-danger" onclick="deleteCierre(${row.id_cierre_inventarios})">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             `;
@@ -531,7 +531,7 @@
         function openCierreModal(cierre = null) {
             if (cierre) {
                 $('#cierreModalTitle').text('Editar Cierre de Inventario');
-                $('#cierreId').val(cierre.id_cierre_inventario);
+                $('#cierreId').val(cierre.id_cierre_inventarios);
                 $('#productoSelect').val(cierre.fk_id_producto);
                 $('#fechaCierre').val(cierre.fecha);
                 $('#cantidadCierre').val(cierre.cantidad);
