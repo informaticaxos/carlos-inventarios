@@ -445,37 +445,7 @@
             });
         }
 
-        // Guardar cierre
-        function saveCierre() {
-            const formData = {
-                fk_id_producto: $('#productoSelect').val(),
-                fecha: $('#fechaCierre').val(),
-                cantidad: $('#cantidadCierre').val()
-            };
 
-            const cierreId = $('#cierreId').val();
-            const method = cierreId ? 'PUT' : 'POST';
-            const url = cierreId ? `${API_BASE_URL}/cierre_inventario/${cierreId}` : `${API_BASE_URL}/cierre_inventario`;
-
-            $.ajax({
-                url: url,
-                method: method,
-                contentType: 'application/json',
-                data: JSON.stringify(formData),
-                success: function(response) {
-                    if (response.state === 1) {
-                        Swal.fire('Éxito', response.message, 'success');
-                        $('#cierreModal').modal('hide');
-                        loadCierres();
-                    } else {
-                        Swal.fire('Error', response.message, 'error');
-                    }
-                },
-                error: function() {
-                    Swal.fire('Error', 'No se pudo guardar el cierre de inventario', 'error');
-                }
-            });
-        }
 
         // Editar producto
         function editProducto(id) {
