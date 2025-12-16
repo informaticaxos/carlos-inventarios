@@ -22,7 +22,7 @@ class CierreInventarioController {
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 extract($row);
                 $cierre_item = array(
-                    "id_cierre_inventario" => $id_cierre_inventario,
+                    "id_cierre_inventario" => $id_cierre_invetarios,
                     "fk_id_producto" => $fk_id_producto,
                     "fecha" => $fecha,
                     "cantidad" => $cantidad
