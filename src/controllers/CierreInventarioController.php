@@ -158,7 +158,7 @@ class CierreInventarioController {
 
         if($num > 0) {
             // Usar FPDF para generar el PDF (librería más simple)
-            require_once '../libs/fpdf/fpdf.php';
+            require_once '../libs/fpdf.php';
 
             class PDF extends FPDF {
                 function Header() {
