@@ -15,7 +15,6 @@ class ProductoController {
 
         if($num > 0) {
             $productos_arr = array();
-            $productos_arr["records"] = array();
 
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 extract($row);
@@ -25,14 +24,22 @@ class ProductoController {
                     "unidad_medida_producto" => $unidad_medida_producto,
                     "categoria_producto" => $categoria_producto
                 );
-                array_push($productos_arr["records"], $producto_item);
+                array_push($productos_arr, $producto_item);
             }
 
             http_response_code(200);
-            echo json_encode($productos_arr);
+            echo json_encode(array(
+                "state" => 1,
+                "message" => "Productos obtenidos correctamente",
+                "data" => $productos_arr
+            ));
         } else {
             http_response_code(404);
-            echo json_encode(array("message" => "No productos found."));
+            echo json_encode(array(
+                "state" => 0,
+                "message" => "No se encontraron productos",
+                "data" => array()
+            ));
         }
     }
 
@@ -48,10 +55,18 @@ class ProductoController {
             );
 
             http_response_code(200);
-            echo json_encode($producto_arr);
+            echo json_encode(array(
+                "state" => 1,
+                "message" => "Producto obtenido correctamente",
+                "data" => $producto_arr
+            ));
         } else {
             http_response_code(404);
-            echo json_encode(array("message" => "Producto not found."));
+            echo json_encode(array(
+                "state" => 0,
+                "message" => "Producto no encontrado",
+                "data" => null
+            ));
         }
     }
 
@@ -61,14 +76,26 @@ class ProductoController {
         if(!empty($data->nombre_producto) && !empty($data->unidad_medida_producto) && !empty($data->categoria_producto)) {
             if($this->repository->create((array)$data)) {
                 http_response_code(201);
-                echo json_encode(array("message" => "Producto was created."));
+                echo json_encode(array(
+                    "state" => 1,
+                    "message" => "Producto creado correctamente",
+                    "data" => null
+                ));
             } else {
                 http_response_code(503);
-                echo json_encode(array("message" => "Unable to create producto."));
+                echo json_encode(array(
+                    "state" => 0,
+                    "message" => "Error al crear el producto",
+                    "data" => null
+                ));
             }
         } else {
             http_response_code(400);
-            echo json_encode(array("message" => "Unable to create producto. Data is incomplete."));
+            echo json_encode(array(
+                "state" => 0,
+                "message" => "Datos incompletos para crear el producto",
+                "data" => null
+            ));
         }
     }
 
@@ -78,24 +105,44 @@ class ProductoController {
         if(!empty($data->nombre_producto) && !empty($data->unidad_medida_producto) && !empty($data->categoria_producto)) {
             if($this->repository->update($id, (array)$data)) {
                 http_response_code(200);
-                echo json_encode(array("message" => "Producto was updated."));
+                echo json_encode(array(
+                    "state" => 1,
+                    "message" => "Producto actualizado correctamente",
+                    "data" => null
+                ));
             } else {
                 http_response_code(503);
-                echo json_encode(array("message" => "Unable to update producto."));
+                echo json_encode(array(
+                    "state" => 0,
+                    "message" => "Error al actualizar el producto",
+                    "data" => null
+                ));
             }
         } else {
             http_response_code(400);
-            echo json_encode(array("message" => "Unable to update producto. Data is incomplete."));
+            echo json_encode(array(
+                "state" => 0,
+                "message" => "Datos incompletos para actualizar el producto",
+                "data" => null
+            ));
         }
     }
 
     public function delete($id) {
         if($this->repository->delete($id)) {
             http_response_code(200);
-            echo json_encode(array("message" => "Producto was deleted."));
+            echo json_encode(array(
+                "state" => 1,
+                "message" => "Producto eliminado correctamente",
+                "data" => null
+            ));
         } else {
             http_response_code(503);
-            echo json_encode(array("message" => "Unable to delete producto."));
+            echo json_encode(array(
+                "state" => 0,
+                "message" => "Error al eliminar el producto",
+                "data" => null
+            ));
         }
     }
 }

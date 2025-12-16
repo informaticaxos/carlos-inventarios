@@ -15,7 +15,6 @@ class CierreInventarioController {
 
         if($num > 0) {
             $cierres_arr = array();
-            $cierres_arr["records"] = array();
 
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 extract($row);
@@ -25,14 +24,22 @@ class CierreInventarioController {
                     "fecha" => $fecha,
                     "cantidad" => $cantidad
                 );
-                array_push($cierres_arr["records"], $cierre_item);
+                array_push($cierres_arr, $cierre_item);
             }
 
             http_response_code(200);
-            echo json_encode($cierres_arr);
+            echo json_encode(array(
+                "state" => 1,
+                "message" => "Cierres de inventario obtenidos correctamente",
+                "data" => $cierres_arr
+            ));
         } else {
             http_response_code(404);
-            echo json_encode(array("message" => "No cierres found."));
+            echo json_encode(array(
+                "state" => 0,
+                "message" => "No se encontraron cierres de inventario",
+                "data" => array()
+            ));
         }
     }
 
@@ -48,10 +55,18 @@ class CierreInventarioController {
             );
 
             http_response_code(200);
-            echo json_encode($cierre_arr);
+            echo json_encode(array(
+                "state" => 1,
+                "message" => "Cierre de inventario obtenido correctamente",
+                "data" => $cierre_arr
+            ));
         } else {
             http_response_code(404);
-            echo json_encode(array("message" => "Cierre not found."));
+            echo json_encode(array(
+                "state" => 0,
+                "message" => "Cierre de inventario no encontrado",
+                "data" => null
+            ));
         }
     }
 
@@ -61,14 +76,26 @@ class CierreInventarioController {
         if(!empty($data->fk_id_producto) && !empty($data->fecha) && isset($data->cantidad)) {
             if($this->repository->create((array)$data)) {
                 http_response_code(201);
-                echo json_encode(array("message" => "Cierre was created."));
+                echo json_encode(array(
+                    "state" => 1,
+                    "message" => "Cierre de inventario creado correctamente",
+                    "data" => null
+                ));
             } else {
                 http_response_code(503);
-                echo json_encode(array("message" => "Unable to create cierre."));
+                echo json_encode(array(
+                    "state" => 0,
+                    "message" => "Error al crear el cierre de inventario",
+                    "data" => null
+                ));
             }
         } else {
             http_response_code(400);
-            echo json_encode(array("message" => "Unable to create cierre. Data is incomplete."));
+            echo json_encode(array(
+                "state" => 0,
+                "message" => "Datos incompletos para crear el cierre de inventario",
+                "data" => null
+            ));
         }
     }
 
@@ -78,24 +105,44 @@ class CierreInventarioController {
         if(!empty($data->fk_id_producto) && !empty($data->fecha) && isset($data->cantidad)) {
             if($this->repository->update($id, (array)$data)) {
                 http_response_code(200);
-                echo json_encode(array("message" => "Cierre was updated."));
+                echo json_encode(array(
+                    "state" => 1,
+                    "message" => "Cierre de inventario actualizado correctamente",
+                    "data" => null
+                ));
             } else {
                 http_response_code(503);
-                echo json_encode(array("message" => "Unable to update cierre."));
+                echo json_encode(array(
+                    "state" => 0,
+                    "message" => "Error al actualizar el cierre de inventario",
+                    "data" => null
+                ));
             }
         } else {
             http_response_code(400);
-            echo json_encode(array("message" => "Unable to update cierre. Data is incomplete."));
+            echo json_encode(array(
+                "state" => 0,
+                "message" => "Datos incompletos para actualizar el cierre de inventario",
+                "data" => null
+            ));
         }
     }
 
     public function delete($id) {
         if($this->repository->delete($id)) {
             http_response_code(200);
-            echo json_encode(array("message" => "Cierre was deleted."));
+            echo json_encode(array(
+                "state" => 1,
+                "message" => "Cierre de inventario eliminado correctamente",
+                "data" => null
+            ));
         } else {
             http_response_code(503);
-            echo json_encode(array("message" => "Unable to delete cierre."));
+            echo json_encode(array(
+                "state" => 0,
+                "message" => "Error al eliminar el cierre de inventario",
+                "data" => null
+            ));
         }
     }
 }
