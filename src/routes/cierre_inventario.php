@@ -19,23 +19,23 @@ $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $uri = explode('/', $uri);
 
 if ($request_method === 'GET') {
-    if (isset($uri[3]) && is_numeric($uri[3])) {
-        $controller->getById($uri[3]);
+    if (isset($uri[4]) && is_numeric($uri[4])) {
+        $controller->getById($uri[4]);
     } else {
         $controller->getAll();
     }
 } elseif ($request_method === 'POST') {
     $controller->create();
 } elseif ($request_method === 'PUT') {
-    if (isset($uri[3]) && is_numeric($uri[3])) {
-        $controller->update($uri[3]);
+    if (isset($uri[4]) && is_numeric($uri[4])) {
+        $controller->update($uri[4]);
     } else {
         http_response_code(400);
         echo json_encode(array("message" => "Invalid ID."));
     }
 } elseif ($request_method === 'DELETE') {
-    if (isset($uri[3]) && is_numeric($uri[3])) {
-        $controller->delete($uri[3]);
+    if (isset($uri[4]) && is_numeric($uri[4])) {
+        $controller->delete($uri[4]);
     } else {
         http_response_code(400);
         echo json_encode(array("message" => "Invalid ID."));
