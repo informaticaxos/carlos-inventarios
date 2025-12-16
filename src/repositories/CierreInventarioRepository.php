@@ -16,7 +16,7 @@ class CierreInventarioRepository {
 
     public function getById($id) {
         $cierre = new CierreInventario($this->conn);
-        $cierre->id_cierre_invetarios = $id;
+        $cierre->id_cierre_inventario = $id;
         $cierre->readOne();
         return $cierre;
     }
@@ -31,7 +31,7 @@ class CierreInventarioRepository {
 
     public function update($id, $data) {
         $cierre = new CierreInventario($this->conn);
-        $cierre->id_cierre_invetarios = $id;
+        $cierre->id_cierre_inventario = $id;
         $cierre->fk_id_producto = $data['fk_id_producto'];
         $cierre->fecha = $data['fecha'];
         $cierre->cantidad = $data['cantidad'];
