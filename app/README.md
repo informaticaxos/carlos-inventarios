@@ -26,7 +26,7 @@ app/
 En el archivo `index.html`, modifica la variable `API_BASE_URL` en la línea 178:
 
 ```javascript
-const API_BASE_URL = 'http://localhost/carlos-inventarios/api'; // Cambia esto por tu URL real
+const API_BASE_URL = 'https://nestorcornejo.com/carlos-inventarios/api'; // Cambia esto por tu URL real
 ```
 
 Por ejemplo:
