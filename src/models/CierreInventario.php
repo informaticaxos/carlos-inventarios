@@ -4,7 +4,7 @@ class CierreInventario {
     private $conn;
     private $table_name = "cierre_inventario";
 
-    public $id_cierre_invetarios;
+    public $id_cierre_inventario;
     public $fk_id_producto;
     public $fecha;
     public $cantidad;
@@ -81,7 +81,7 @@ class CierreInventario {
     }
 
     public function update() {
-        $query = "UPDATE " . $this->table_name . " SET fk_id_producto = :fk_id_producto, fecha = :fecha, cantidad = :cantidad WHERE id_cierre_invetarios = :id_cierre_invetarios";
+        $query = "UPDATE " . $this->table_name . " SET fk_id_producto = :fk_id_producto, fecha = :fecha, cantidad = :cantidad WHERE id_cierre_invetarios = :id_cierre_inventario";
 
         $stmt = $this->conn->prepare($query);
 
@@ -95,7 +95,7 @@ class CierreInventario {
         $stmt->bindParam(':fk_id_producto', $this->fk_id_producto);
         $stmt->bindParam(':fecha', $this->fecha);
         $stmt->bindParam(':cantidad', $this->cantidad);
-        $stmt->bindParam(':id_cierre_invetarios', $this->id_cierre_invetarios);
+        $stmt->bindParam(':id_cierre_inventario', $this->id_cierre_inventario);
 
         // Execute and check for errors
         if($stmt->execute()) {
@@ -104,7 +104,7 @@ class CierreInventario {
                 return true;
             } else {
                 // No rows affected - record might not exist
-                error_log("Update failed: No rows affected for id_cierre_invetarios = " . $this->id_cierre_invetarios);
+                error_log("Update failed: No rows affected for id_cierre_inventario = " . $this->id_cierre_inventario);
                 return false;
             }
         } else {
@@ -119,8 +119,8 @@ class CierreInventario {
         $query = "DELETE FROM " . $this->table_name . " WHERE id_cierre_invetarios = ?";
 
         $stmt = $this->conn->prepare($query);
-        $this->id_cierre_invetarios = htmlspecialchars(strip_tags($this->id_cierre_invetarios));
-        $stmt->bindParam(1, $this->id_cierre_invetarios);
+        $this->id_cierre_inventario = htmlspecialchars(strip_tags($this->id_cierre_inventario));
+        $stmt->bindParam(1, $this->id_cierre_inventario);
 
         if($stmt->execute()) {
             return true;
