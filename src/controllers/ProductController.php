@@ -21,17 +21,25 @@ class ProductController
     public function getAll()
     {
         $products = $this->productModel->getAll();
-        echo json_encode($products);
+        echo json_encode([
+            'state' => 1,
+            'message' => 'Listado de productos obtenido con éxito',
+            'data' => $products
+        ]);
     }
 
     public function getById($id)
     {
         $product = $this->productModel->getById($id);
         if ($product) {
-            echo json_encode($product);
+            echo json_encode([
+                'state' => 1,
+                'message' => 'Producto encontrado',
+                'data' => $product
+            ]);
         } else {
             http_response_code(404);
-            echo json_encode(['error' => 'Producto no encontrado']);
+            echo json_encode(['state' => 0, 'message' => 'Producto no encontrado', 'data' => []]);
         }
     }
 
@@ -41,10 +49,14 @@ class ProductController
         
         if (isset($data['nombre_producto'], $data['unidad_medida_producto'], $data['categoria_producto'])) {
             $id = $this->productModel->create($data);
-            echo json_encode(['message' => 'Producto creado', 'id_producto' => $id]);
+            echo json_encode([
+                'state' => 1, 
+                'message' => 'Producto creado con éxito', 
+                'data' => ['id_producto' => $id]
+            ]);
         } else {
             http_response_code(400);
-            echo json_encode(['error' => 'Datos incompletos']);
+            echo json_encode(['state' => 0, 'message' => 'Datos incompletos', 'data' => []]);
         }
     }
 
@@ -54,16 +66,16 @@ class ProductController
         
         if (isset($data['nombre_producto'], $data['unidad_medida_producto'], $data['categoria_producto'])) {
             $success = $this->productModel->update($id, $data);
-            echo json_encode(['success' => $success]);
+            echo json_encode(['state' => 1, 'message' => 'Producto actualizado con éxito', 'data' => []]);
         } else {
             http_response_code(400);
-            echo json_encode(['error' => 'Datos incompletos']);
+            echo json_encode(['state' => 0, 'message' => 'Datos incompletos', 'data' => []]);
         }
     }
 
     public function delete($id)
     {
         $success = $this->productModel->delete($id);
-        echo json_encode(['success' => $success]);
+        echo json_encode(['state' => 1, 'message' => 'Producto eliminado con éxito', 'data' => []]);
     }
 }

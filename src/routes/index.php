@@ -73,5 +73,9 @@ foreach ($routes as $routeDef => $handler) {
 
 if (!$matched) {
     http_response_code(404);
-    echo json_encode(["error" => "Endpoint no encontrado", "path_recibido" => $path]);
+    echo json_encode([
+        "state" => 0,
+        "message" => "Endpoint no encontrado",
+        "data" => ["path_recibido" => $path]
+    ]);
 }
