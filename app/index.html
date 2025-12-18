@@ -3,525 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Sistema de Inventarios</title>
+    <title>Gestión de Inventario</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
-    <!-- SweetAlert2 CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.27/dist/sweetalert2.min.css">
-    <style>
-        .sidebar {
-            min-height: 100vh;
-            width: 200px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-            transition: all 0.3s ease;
-        }
-        .sidebar.collapsed {
-            width: 60px;
-        }
-        .sidebar .sidebar-header {
-            padding: 1rem 0.75rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: center;
-        }
-        .sidebar .sidebar-header h5 {
-            font-size: 1.1rem;
-            margin: 0;
-            white-space: nowrap;
-            overflow: hidden;
-        }
-        .sidebar.collapsed .sidebar-header h5 {
-            opacity: 0;
-        }
-        .sidebar .nav-link {
-            color: rgba(255, 255, 255, 0.8);
-            transition: all 0.3s;
-            padding: 0.75rem 1rem;
-            border-radius: 0;
-            margin: 0.25rem 0.5rem;
-            white-space: nowrap;
-        }
-        .sidebar.collapsed .nav-link {
-            text-align: center;
-            padding: 0.75rem;
-        }
-        .sidebar.collapsed .nav-link span {
-            display: none;
-        }
-        .sidebar .nav-link:hover {
-            color: white;
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-        .sidebar .nav-link.active {
-            color: white;
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-        .sidebar .nav-link i {
-            font-size: 1.2rem;
-            margin-right: 0.5rem;
-        }
-        .sidebar.collapsed .nav-link i {
-            margin-right: 0;
-        }
-        .content-wrapper {
-            margin-left: 200px;
-            transition: margin-left 0.3s ease;
-        }
-        .content-wrapper.expanded {
-            margin-left: 60px;
-        }
-        .top-navbar {
-            background: white;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            padding: 0.5rem 1rem;
-        }
-        .toggle-btn {
-            background: none;
-            border: none;
-            color: #6c757d;
-            font-size: 1.2rem;
-            padding: 0.5rem;
-            border-radius: 0.375rem;
-            transition: all 0.3s;
-        }
-        .toggle-btn:hover {
-            background-color: #f8f9fa;
-            color: #495057;
-        }
-        @media (max-width: 767.98px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-            .sidebar.show {
-                transform: translateX(0);
-            }
-            .content-wrapper {
-                margin-left: 0;
-            }
-            .content-wrapper.expanded {
-                margin-left: 0;
-            }
-        }
-        .card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-        }
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
-        }
-        .table-responsive {
-            border-radius: 10px;
-            overflow: hidden;
-        }
-    </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <nav class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <h5>
-                <i class="bi bi-box-seam"></i>
-                <span>Inventarios</span>
-            </h5>
+    <div class="container mt-5">
+        <h2 class="mb-4 text-center">Listado de Productos</h2>
+        
+        <div class="d-flex justify-content-end mb-3">
+            <button class="btn btn-primary" onclick="openModal()">
+                <i class="bi bi-plus-circle"></i> Nuevo Producto
+            </button>
         </div>
-        <ul class="nav flex-column">
-            <li class="nav-item">
-                <a class="nav-link active" href="#" onclick="showSection('productos')">
-                    <i class="bi bi-box"></i>
-                    <span>Productos</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
 
-    <!-- Main Content -->
-    <div class="content-wrapper">
-        <!-- Header -->
-        <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
-            <div class="container-fluid">
-                <button class="btn btn-outline-secondary d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar">
-                    <i class="bi bi-list"></i>
-                </button>
-                <button class="toggle-btn d-none d-md-block" id="sidebarToggle">
-                    <i class="bi bi-chevron-left"></i>
-                </button>
-                <span class="navbar-brand mb-0 h1 ms-2">Sistema de Inventarios</span>
-            </div>
-        </nav>
-
-        <!-- Content -->
-        <div class="container-fluid p-4">
-            <!-- Productos Section -->
-            <div id="productos-section" class="section">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2><i class="bi bi-box me-2"></i>Gestión de Productos</h2>
-                    <button class="btn btn-primary" onclick="openProductoModal()">
-                        <i class="bi bi-plus-circle me-2"></i>Nuevo Producto
-                    </button>
-                </div>
-
-                <div class="card">
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table id="productosTable" class="table table-striped table-hover">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Nombre</th>
-                                        <th>Unidad de Medida</th>
-                                        <th>Categoría</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Unidad</th>
+                        <th>Categoría</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="productTableBody">
+                    <!-- Los datos se cargarán aquí dinámicamente -->
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <!-- Modal Producto -->
-    <div class="modal fade" id="productoModal" tabindex="-1">
+    <!-- Modal para Crear/Editar -->
+    <div class="modal fade" id="productModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="productoModalTitle">Nuevo Producto</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <h5 class="modal-title" id="modalTitle">Producto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="productoForm">
-                        <input type="hidden" id="productoId" name="id">
-                        <div class="mb-3">
-                            <label for="nombreProducto" class="form-label">Nombre del Producto *</label>
-                            <input type="text" class="form-control" id="nombreProducto" name="nombre_producto" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="unidadMedida" class="form-label">Unidad de Medida *</label>
-                            <select class="form-control" id="unidadMedida" name="unidad_medida_producto" required>
-                                <option value="">Seleccione una unidad</option>
-                                <option value="KG">KG</option>
-                                <option value="GR">GR</option>
-                                <option value="UN">UN</option>
-                                <option value="LT">LT</option>
-                                <option value="ML">ML</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="categoriaProducto" class="form-label">Categoría *</label>
-                            <select class="form-control" id="categoriaProducto" name="categoria_producto" required>
-                                <option value="">Seleccione una categoría</option>
-                                <option value="PRODUCTOS DE LIMPIEZA">PRODUCTOS DE LIMPIEZA</option>
-                                <option value="PLASTICOS">PLASTICOS</option>
-                                <option value="FRUTAS">FRUTAS</option>
-                                <option value="PANADERIA">PANADERIA</option>
-                                <option value="ABARROTES">ABARROTES</option>
-                                <option value="LACTEOS">LACTEOS</option>
-                                <option value="EMBUTIDOS">EMBUTIDOS</option>
-                                <option value="CONFITERIA">CONFITERIA</option>
-                                <option value="VERDURAS">VERDURAS</option>
-                                <option value="CARNICOS">CARNICOS</option>
-                            </select>
-                        </div>
-                    </form>
+                    <input type="hidden" id="productId">
+                    <div class="mb-3"><label class="form-label">Nombre del Producto</label><input type="text" class="form-control" id="nombre" required></div>
+                    <div class="mb-3"><label class="form-label">Unidad de Medida</label><input type="text" class="form-control" id="unidad" required></div>
+                    <div class="mb-3"><label class="form-label">Categoría</label><input type="text" class="form-control" id="categoria" required></div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" onclick="saveProducto()">Guardar</button>
+                    <button type="button" class="btn btn-primary" onclick="saveProduct()">Guardar</button>
                 </div>
             </div>
         </div>
     </div>
 
-
-
-    <!-- Modal Reporte PDF -->
-    <div class="modal fade" id="reportModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Generar Reporte PDF de Cierres de Inventario</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="reportForm">
-                        <div class="mb-3">
-                            <label for="fechaInicio" class="form-label">Fecha de Inicio *</label>
-                            <input type="date" class="form-control" id="fechaInicio" name="fecha_inicio" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="fechaFin" class="form-label">Fecha de Fin *</label>
-                            <input type="date" class="form-control" id="fechaFin" name="fecha_fin" required>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-success" onclick="generatePDFReport()">
-                        <i class="bi bi-file-earmark-pdf me-2"></i>Generar y Descargar PDF
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <!-- DataTables JS -->
-    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
-    <!-- SweetAlert2 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.27/dist/sweetalert2.all.min.js"></script>
-
-    <script>
-        // API Base URL - Cambia esto por tu URL real cuando despliegues
-        const API_BASE_URL = 'https://nestorcornejo.com/carlos-inventarios/api';
-
-        // Variables globales
-        let productosTable;
-        let productos = [];
-
-        // Inicializar cuando el documento esté listo
-        $(document).ready(function() {
-            initializeDataTables();
-            loadProductos();
-
-            // Sidebar toggle functionality
-            $('#sidebarToggle').on('click', function() {
-                $('#sidebar').toggleClass('collapsed');
-                $('.content-wrapper').toggleClass('expanded');
-                const icon = $(this).find('i');
-                if ($('#sidebar').hasClass('collapsed')) {
-                    icon.removeClass('bi-chevron-left').addClass('bi-chevron-right');
-                } else {
-                    icon.removeClass('bi-chevron-right').addClass('bi-chevron-left');
-                }
-            });
-        });
-
-        // Inicializar DataTables
-        function initializeDataTables() {
-            productosTable = $('#productosTable').DataTable({
-                language: {
-                    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
-                },
-                responsive: true,
-                columns: [
-                    { data: 'id_producto' },
-                    { data: 'nombre_producto' },
-                    { data: 'unidad_medida_producto' },
-                    { data: 'categoria_producto' },
-                    {
-                        data: null,
-                        render: function(data, type, row) {
-                            return `
-                                <button class="btn btn-sm btn-warning me-1" onclick="editProducto(${row.id_producto})">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <button class="btn btn-sm btn-danger" onclick="deleteProducto(${row.id_producto})">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            `;
-                        }
-                    }
-                ]
-            });
-        }
-
-        // Cambiar entre secciones
-        function showSection(section) {
-            $('.section').addClass('d-none');
-            $(`#${section}-section`).removeClass('d-none');
-
-            $('.nav-link').removeClass('active');
-            $(`.nav-link[onclick*="${section}"]`).addClass('active');
-        }
-
-        // Cargar productos
-        function loadProductos() {
-            $.ajax({
-                url: `${API_BASE_URL}/producto`,
-                method: 'GET',
-                success: function(response) {
-                    if (response.state === 1) {
-                        productos = response.data;
-                        productosTable.clear().rows.add(response.data).draw();
-                    } else {
-                        Swal.fire('Error', response.message, 'error');
-                    }
-                },
-                error: function() {
-                    Swal.fire('Error', 'No se pudieron cargar los productos', 'error');
-                }
-            });
-        }
-
-        // Cargar productos para el select
-        function loadProductosForSelect() {
-            $.ajax({
-                url: `${API_BASE_URL}/producto`,
-                method: 'GET',
-                success: function(response) {
-                    if (response.state === 1) {
-                        productos = response.data;
-                        const select = $('#productoSelect');
-                        select.empty();
-                        select.append('<option value="">Seleccione un producto</option>');
-                        response.data.forEach(producto => {
-                            select.append(`<option value="${producto.id_producto}">${producto.nombre_producto}</option>`);
-                        });
-                    }
-                }
-            });
-        }
-
-        // Abrir modal de producto
-        function openProductoModal(producto = null) {
-            if (producto) {
-                $('#productoModalTitle').text('Editar Producto');
-                $('#productoId').val(producto.id_producto);
-                $('#nombreProducto').val(producto.nombre_producto);
-                $('#unidadMedida').val(producto.unidad_medida_producto);
-                $('#categoriaProducto').val(producto.categoria_producto);
-            } else {
-                $('#productoModalTitle').text('Nuevo Producto');
-                $('#productoForm')[0].reset();
-                $('#productoId').val('');
-            }
-            $('#productoModal').modal('show');
-        }
-
-
-
-        // Guardar producto
-        function saveProducto() {
-            const formData = {
-                nombre_producto: $('#nombreProducto').val(),
-                unidad_medida_producto: $('#unidadMedida').val(),
-                categoria_producto: $('#categoriaProducto').val()
-            };
-
-            const productoId = $('#productoId').val();
-            const method = productoId ? 'PUT' : 'POST';
-            const url = productoId ? `${API_BASE_URL}/producto/${productoId}` : `${API_BASE_URL}/producto`;
-
-            $.ajax({
-                url: url,
-                method: method,
-                contentType: 'application/json',
-                data: JSON.stringify(formData),
-                success: function(response) {
-                    if (response.state === 1) {
-                        Swal.fire('Éxito', response.message, 'success');
-                        $('#productoModal').modal('hide');
-                        loadProductos();
-                        loadProductosForSelect();
-                    } else {
-                        Swal.fire('Error', response.message, 'error');
-                    }
-                },
-                error: function() {
-                    Swal.fire('Error', 'No se pudo guardar el producto', 'error');
-                }
-            });
-        }
-
-
-
-        // Editar producto
-        function editProducto(id) {
-            const producto = productos.find(p => p.id_producto == id);
-            if (producto) {
-                openProductoModal(producto);
-            }
-        }
-
-
-
-        // Eliminar producto
-        function deleteProducto(id) {
-            Swal.fire({
-                title: '¿Estás seguro?',
-                text: 'Esta acción no se puede deshacer',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: `${API_BASE_URL}/producto/${id}`,
-                        method: 'DELETE',
-                        success: function(response) {
-                            if (response.state === 1) {
-                                Swal.fire('Eliminado', response.message, 'success');
-                                loadProductos();
-                                loadProductosForSelect();
-                                loadCierres(); // Recargar cierres porque pueden estar relacionados
-                            } else {
-                                Swal.fire('Error', response.message, 'error');
-                            }
-                        },
-                        error: function() {
-                            Swal.fire('Error', 'No se pudo eliminar el producto', 'error');
-                        }
-                    });
-                }
-            });
-        }
-
-        // Eliminar cierre
-        function deleteCierre(id) {
-            Swal.fire({
-                title: '¿Estás seguro?',
-                text: 'Esta acción no se puede deshacer',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: `${API_BASE_URL}/cierre_inventario/${id}`,
-                        method: 'DELETE',
-                        success: function(response) {
-                            if (response.state === 1) {
-                                Swal.fire('Eliminado', response.message, 'success');
-                                loadCierres();
-                            } else {
-                                Swal.fire('Error', response.message, 'error');
-                            }
-                        },
-                        error: function() {
-                            Swal.fire('Error', 'No se pudo eliminar el cierre de inventario', 'error');
-                        }
-                    });
-                }
-            });
-        }
-
-
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>
