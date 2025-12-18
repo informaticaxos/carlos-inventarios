@@ -12,10 +12,22 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 require_once '../config/Database.php';
 require_once '../controllers/ProductoController.php';
 
-$database = new Database();
-$db = $database->getConnection();
+try {
+    $database = new Database();
+    $db = $database->getConnection();
 
-$controller = new ProductoController($db);
+    if ($db === null) {
+        http_response_code(500);
+        echo json_encode(array("state" => 0, "message" => "Database connection failed", "data" => null));
+        exit;
+    }
+
+    $controller = new ProductoController($db);
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode(array("state" => 0, "message" => "Internal server error", "data" => null));
+    exit;
+}
 
 $request_method = $_SERVER["REQUEST_METHOD"];
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
