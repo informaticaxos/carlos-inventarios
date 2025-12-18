@@ -32,9 +32,16 @@ $dirname = dirname($scriptName);
 // Normalizar directorios (Windows usa \, web usa /)
 $dirname = str_replace('\\', '/', $dirname);
 
-// Calcular la ruta relativa (ej: convertir /carlos-inventarios/api/producto a /producto)
-$path = str_replace($dirname, '', $requestUri);
-$path = explode('?', $path)[0]; // Quitar parámetros GET (?id=1...)
+// Calcular la ruta relativa
+$requestUri = explode('?', $requestUri)[0]; // Quitar parámetros GET
+
+if (strpos($requestUri, '/api/') !== false) {
+    // Si la URL contiene '/api/', tomamos todo lo que viene después
+    $path = '/' . explode('/api/', $requestUri, 2)[1];
+} else {
+    // Fallback: intentar restar el directorio del script
+    $path = str_replace($dirname, '', $requestUri);
+}
 
 // Asegurar formato correcto de la ruta
 if (empty($path) || $path === '/') {
