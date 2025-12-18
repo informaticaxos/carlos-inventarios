@@ -1,9 +1,9 @@
 RewriteEngine On
 
 # Handle API routes
-RewriteRule ^carlos-inventarios/api/producto/?$ src/routes/producto.php [L]
-RewriteRule ^carlos-inventarios/api/producto/([0-9]+)/?$ src/routes/producto.php?id=$1 [L]
-RewriteRule ^carlos-inventarios/api/producto/report/?$ src/routes/producto.php?report=1 [L]
+RewriteRule ^api/producto/?$ src/routes/producto.php [L]
+RewriteRule ^api/producto/([0-9]+)/?$ src/routes/producto.php?id=$1 [L]
+RewriteRule ^api/producto/report/?$ src/routes/producto.php?report=1 [L]
 
 # Handle other static files
 RewriteCond %{REQUEST_FILENAME} !-f
