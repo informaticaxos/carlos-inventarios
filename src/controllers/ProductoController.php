@@ -10,35 +10,53 @@ class ProductoController {
     }
 
     public function getAll() {
-        $stmt = $this->repository->getAll();
-        $num = $stmt->rowCount();
-
-        if($num > 0) {
-            $productos_arr = array();
-
-            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                extract($row);
-                $producto_item = array(
-                    "id_producto" => $id_producto,
-                    "nombre_producto" => $nombre_producto,
-                    "unidad_medida_producto" => $unidad_medida_producto,
-                    "categoria_producto" => $categoria_producto
-                );
-                array_push($productos_arr, $producto_item);
+        try {
+            $stmt = $this->repository->getAll();
+            if ($stmt === false) {
+                http_response_code(500);
+                echo json_encode(array(
+                    "state" => 0,
+                    "message" => "Error al ejecutar la consulta",
+                    "data" => null
+                ));
+                return;
             }
+            $num = $stmt->rowCount();
 
-            http_response_code(200);
-            echo json_encode(array(
-                "state" => 1,
-                "message" => "Productos obtenidos correctamente",
-                "data" => $productos_arr
-            ));
-        } else {
-            http_response_code(404);
+            if($num > 0) {
+                $productos_arr = array();
+
+                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                    extract($row);
+                    $producto_item = array(
+                        "id_producto" => $id_producto,
+                        "nombre_producto" => $nombre_producto,
+                        "unidad_medida_producto" => $unidad_medida_producto,
+                        "categoria_producto" => $categoria_producto
+                    );
+                    array_push($productos_arr, $producto_item);
+                }
+
+                http_response_code(200);
+                echo json_encode(array(
+                    "state" => 1,
+                    "message" => "Productos obtenidos correctamente",
+                    "data" => $productos_arr
+                ));
+            } else {
+                http_response_code(404);
+                echo json_encode(array(
+                    "state" => 0,
+                    "message" => "No se encontraron productos",
+                    "data" => array()
+                ));
+            }
+        } catch (Exception $e) {
+            http_response_code(500);
             echo json_encode(array(
                 "state" => 0,
-                "message" => "No se encontraron productos",
-                "data" => array()
+                "message" => "Error interno del servidor: " . $e->getMessage(),
+                "data" => null
             ));
         }
     }
