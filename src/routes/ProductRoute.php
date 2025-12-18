@@ -7,13 +7,18 @@
 
 // Definición de rutas REST para Products
 $routes = [
-    'GET /products' => ['ProductController', 'getAll'],
-    'GET /products/search' => ['ProductController', 'search'],
-    'GET /products/max-aux' => ['ProductController', 'getMaxAux'],
-    'GET /products/stats' => ['ProductController', 'getStats'],
-    'GET /products/{id}' => ['ProductController', 'getById'],
-    'POST /products' => ['ProductController', 'create'],
-    'POST /products/bulk-import' => ['ProductController', 'bulkImport'],
-    'PUT /products/{id}' => ['ProductController', 'update'],
-    'DELETE /products/{id}' => ['ProductController', 'delete'],
+    // Obtener todos los productos: https://nestorcornejo.com/carlos-inventarios/api/producto
+    'GET /producto' => ['ProductController', 'getAll'],
+
+    // Obtener un producto por ID: https://nestorcornejo.com/carlos-inventarios/api/producto/{id}
+    'GET /producto/{id}' => ['ProductController', 'getById'],
+
+    // Crear un producto: https://nestorcornejo.com/carlos-inventarios/api/producto
+    'POST /producto' => ['ProductController', 'create'],
+
+    // Actualizar un producto: https://nestorcornejo.com/carlos-inventarios/api/producto/{id}
+    'PUT /producto/{id}' => ['ProductController', 'update'],
+
+    // Eliminar un producto: https://nestorcornejo.com/carlos-inventarios/api/producto/{id}
+    'DELETE /producto/{id}' => ['ProductController', 'delete'],
 ];
