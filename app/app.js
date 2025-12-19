@@ -403,8 +403,8 @@ function renderCierreTable(cierres) {
             <td>${cierre.fecha}</td>
             <td>${cierre.cantidad}</td>
             <td class="text-center">
-                <button class="btn btn-warning btn-sm" onclick="editCierre(${cierre.id_cierre_invetarios})">Editar</button>
-                <button class="btn btn-danger btn-sm" onclick="deleteCierre(${cierre.id_cierre_invetarios})">Eliminar</button>
+                <button class="btn btn-warning btn-sm me-2" onclick="editCierre(${cierre.id_cierre_invetarios})"><i class="bi bi-pencil"></i> Editar</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteCierre(${cierre.id_cierre_invetarios})"><i class="bi bi-trash"></i> Eliminar</button>
             </td>
         `;
         tbody.appendChild(tr);
