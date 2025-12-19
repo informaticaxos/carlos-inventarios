@@ -13,16 +13,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 // --- CONFIGURACIÓN DE BASE DE DATOS ---
-require_once __DIR__ . '/../config/Database.php';
+require_once __DIR__ . '/../src/config/Database.php';
 
 $database = new Database();
 $pdo = $database->getConnection();
 
 // --- CARGA DE DEPENDENCIAS ---
-require_once __DIR__ . '/../controllers/ProductController.php';
-require_once __DIR__ . '/ProductRoute.php';
-require_once __DIR__ . '/../controllers/InventoryClosingController.php';
-require_once __DIR__ . '/InventoryClosingRoute.php';
+// Ajustamos las rutas para apuntar a la carpeta src
+require_once __DIR__ . '/../src/controllers/ProductController.php';
+require_once __DIR__ . '/../src/routes/ProductRoute.php';
+require_once __DIR__ . '/../src/controllers/InventoryClosingController.php';
+require_once __DIR__ . '/../src/routes/InventoryClosingRoute.php';
 
 // --- ENRUTADOR (ROUTER) ---
 
