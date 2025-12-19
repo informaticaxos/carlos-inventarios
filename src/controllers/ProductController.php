@@ -20,11 +20,23 @@ class ProductController
 
     public function getAll()
     {
-        $products = $this->productModel->getAll();
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $limit = 5; // Cantidad de productos por página
+        $offset = ($page - 1) * $limit;
+
+        $totalRecords = $this->productModel->countAll();
+        $totalPages = ceil($totalRecords / $limit);
+        $products = $this->productModel->getAll($limit, $offset);
+
         echo json_encode([
             'state' => 1,
             'message' => 'Listado de productos obtenido con éxito',
-            'data' => $products
+            'data' => $products,
+            'pagination' => [
+                'current_page' => $page,
+                'total_pages' => $totalPages,
+                'total_records' => $totalRecords
+            ]
         ]);
     }
 

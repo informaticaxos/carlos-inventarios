@@ -9,9 +9,11 @@ class Product
         $this->pdo = $pdo;
     }
 
-    public function getAll()
+    public function getAll($limit, $offset)
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM producto ORDER BY id_producto DESC");
+        $stmt = $this->pdo->prepare("SELECT * FROM producto ORDER BY id_producto DESC LIMIT :limit OFFSET :offset");
+        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -56,5 +58,13 @@ class Product
     {
         $stmt = $this->pdo->prepare("DELETE FROM producto WHERE id_producto = :id");
         return $stmt->execute(['id' => $id]);
+    }
+
+    public function countAll()
+    {
+        $stmt = $this->pdo->prepare("SELECT COUNT(*) as total FROM producto");
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row['total'];
     }
 }

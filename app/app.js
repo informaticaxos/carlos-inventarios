@@ -1,5 +1,6 @@
 const API_URL = 'https://nestorcornejo.com/carlos-inventarios/api/producto';
 let productModal;
+let currentPage = 1;
 
 // Inicialización al cargar la página
 document.addEventListener('DOMContentLoaded', () => {
@@ -8,13 +9,15 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Función para obtener y listar productos (GET)
-async function loadProducts() {
+async function loadProducts(page = 1) {
+    currentPage = page;
     try {
-        const response = await fetch(API_URL);
+        const response = await fetch(`${API_URL}?page=${page}`);
         const result = await response.json();
 
         if (result.state === 1) {
             renderTable(result.data);
+            renderPagination(result.pagination);
         } else {
             console.error('Error del servidor:', result.message);
             Swal.fire({
@@ -52,6 +55,34 @@ function renderTable(products) {
         `;
         tbody.appendChild(tr);
     });
+}
+
+// Renderizar controles de paginación
+function renderPagination(pagination) {
+    const container = document.getElementById('paginationContainer');
+    container.innerHTML = '';
+
+    if (pagination.total_pages <= 1) return;
+
+    // Botón Anterior
+    const prevLi = document.createElement('li');
+    prevLi.className = `page-item ${pagination.current_page === 1 ? 'disabled' : ''}`;
+    prevLi.innerHTML = `<a class="page-link" href="#" onclick="loadProducts(${pagination.current_page - 1})">Anterior</a>`;
+    container.appendChild(prevLi);
+
+    // Números de página
+    for (let i = 1; i <= pagination.total_pages; i++) {
+        const li = document.createElement('li');
+        li.className = `page-item ${i === pagination.current_page ? 'active' : ''}`;
+        li.innerHTML = `<a class="page-link" href="#" onclick="loadProducts(${i})">${i}</a>`;
+        container.appendChild(li);
+    }
+
+    // Botón Siguiente
+    const nextLi = document.createElement('li');
+    nextLi.className = `page-item ${pagination.current_page === pagination.total_pages ? 'disabled' : ''}`;
+    nextLi.innerHTML = `<a class="page-link" href="#" onclick="loadProducts(${pagination.current_page + 1})">Siguiente</a>`;
+    container.appendChild(nextLi);
 }
 
 // Abrir modal para crear
