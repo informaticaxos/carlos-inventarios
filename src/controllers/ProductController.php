@@ -15,25 +15,34 @@ class ProductController
     // GET /producto
     public function getAll()
     {
-        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-        $perPage = 10;
-        $offset = ($page - 1) * $perPage;
-        $search = isset($_GET['search']) ? trim($_GET['search']) : null;
+        if (isset($_GET['all'])) {
+            $search = isset($_GET['search']) ? trim($_GET['search']) : null;
+            $data = $this->productRepository->findAll(null, 0, $search);
+            echo json_encode([
+                "state" => 1,
+                "data" => $data
+            ]);
+        } else {
+            $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+            $perPage = 10;
+            $offset = ($page - 1) * $perPage;
+            $search = isset($_GET['search']) ? trim($_GET['search']) : null;
 
-        $data = $this->productRepository->findAll($perPage, $offset, $search);
-        $total = $this->productRepository->count($search);
-        $lastPage = ceil($total / $perPage);
+            $data = $this->productRepository->findAll($perPage, $offset, $search);
+            $total = $this->productRepository->count($search);
+            $lastPage = ceil($total / $perPage);
 
-        echo json_encode([
-            "state" => 1,
-            "data" => $data,
-            "pagination" => [
-                "current_page" => $page,
-                "per_page" => $perPage,
-                "total" => $total,
-                "last_page" => $lastPage
-            ]
-        ]);
+            echo json_encode([
+                "state" => 1,
+                "data" => $data,
+                "pagination" => [
+                    "current_page" => $page,
+                    "per_page" => $perPage,
+                    "total" => $total,
+                    "last_page" => $lastPage
+                ]
+            ]);
+        }
     }
 
     // GET /producto/{id}

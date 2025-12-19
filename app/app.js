@@ -479,7 +479,7 @@ window.openCierreModal = async function(id = null) {
 // Cargar productos para el select
 async function loadProductosForSelect() {
     try {
-        const response = await fetch(`${API_URL}?page=1`);
+        const response = await fetch(`${API_URL}?all=true`);
         const result = await response.json();
         if (result.state === 1) {
             const select = document.getElementById('cierreProducto');
