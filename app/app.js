@@ -17,7 +17,11 @@ async function loadProducts() {
             renderTable(result.data);
         } else {
             console.error('Error del servidor:', result.message);
-            alert('No se pudieron cargar los productos: ' + result.message);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No se pudieron cargar los productos: ' + result.message
+            });
         }
     } catch (error) {
         console.error('Error de red:', error);
@@ -93,9 +97,17 @@ async function saveProduct() {
         if (result.state === 1) {
             productModal.hide();
             loadProducts(); // Recargar tabla
-            alert(result.message);
+            Swal.fire({
+                icon: 'success',
+                title: '¡Éxito!',
+                text: result.message
+            });
         } else {
-            alert('Error al guardar: ' + result.message);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Error al guardar: ' + result.message
+            });
         }
     } catch (error) {
         console.error('Error:', error);
@@ -104,19 +116,34 @@ async function saveProduct() {
 
 // Eliminar producto (DELETE)
 async function deleteProduct(id) {
-    if (!confirm('¿Está seguro de eliminar este producto?')) return;
+    const resultConfirm = await Swal.fire({
+        title: '¿Está seguro?',
+        text: "No podrás revertir esto!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, eliminarlo!',
+        cancelButtonText: 'Cancelar'
+    });
 
-    try {
-        const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-        const result = await response.json();
+    if (resultConfirm.isConfirmed) {
+        try {
+            const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+            const result = await response.json();
 
-        if (result.state === 1) {
-            loadProducts();
-            alert(result.message);
-        } else {
-            alert('Error al eliminar: ' + result.message);
+            if (result.state === 1) {
+                loadProducts();
+                Swal.fire('Eliminado!', result.message, 'success');
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error al eliminar: ' + result.message
+                });
+            }
+        } catch (error) {
+            console.error('Error:', error);
         }
-    } catch (error) {
-        console.error('Error:', error);
     }
 }
