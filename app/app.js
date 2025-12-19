@@ -157,6 +157,13 @@ window.loadProducts = async function(page = 1, search = '') {
 window.searchProducts = function() {
     const searchTerm = document.getElementById('searchInput').value.trim();
     loadProducts(1, searchTerm);
+    Swal.fire({
+        icon: 'success',
+        title: 'Búsqueda realizada',
+        text: 'Los productos han sido filtrados por el término de búsqueda.',
+        timer: 2000,
+        showConfirmButton: false
+    });
 }
 
 // Renderizar la tabla HTML
@@ -335,7 +342,7 @@ window.deleteProduct = async function(id) {
 // ==================== FUNCIONES PARA CIERRES ====================
 
 // Función para obtener y listar cierres (GET)
-window.loadCierres = async function(page = 1) {
+window.loadCierres = async function(page = 1, showNotification = false) {
     currentCierrePage = page;
     const fechaInicio = document.getElementById('fechaInicio').value;
     const fechaFinal = document.getElementById('fechaFinal').value;
@@ -347,6 +354,15 @@ window.loadCierres = async function(page = 1) {
         if (result.state === 1) {
             renderCierreTable(result.data);
             renderCierrePagination(result.pagination);
+            if (showNotification) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Filtrado realizado',
+                    text: 'Los cierres han sido filtrados por el rango de fechas.',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            }
         } else {
             console.error('Error del servidor:', result.message);
             Swal.fire({
