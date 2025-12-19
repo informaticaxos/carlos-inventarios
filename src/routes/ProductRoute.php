@@ -6,7 +6,7 @@
  */
 
 // Definición de rutas REST para Products
-$routes = array_merge($routes ?? [], [
+$routes = [
     // Obtener todos los productos: https://nestorcornejo.com/carlos-inventarios/api/producto
     'GET /producto' => ['ProductController', 'getAll'],
 
@@ -21,4 +21,4 @@ $routes = array_merge($routes ?? [], [
 
     // Eliminar un producto: https://nestorcornejo.com/carlos-inventarios/api/producto/{id}
     'DELETE /producto/{id}' => ['ProductController', 'delete'],
-]);
+];
