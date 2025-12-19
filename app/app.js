@@ -88,7 +88,7 @@ function setCierreLoading(isLoading) {
 }
 
 // Función para obtener y listar productos (GET)
-async function loadProducts(page = 1, search = '') {
+window.loadProducts = async function(page = 1, search = '') {
     currentPage = page;
     currentSearch = search;
     setLoading(true);
@@ -118,6 +118,12 @@ async function loadProducts(page = 1, search = '') {
     }
 }
 
+// Función para buscar productos
+window.searchProducts = function() {
+    const searchTerm = document.getElementById('searchInput').value.trim();
+    loadProducts(1, searchTerm);
+}
+
 // Renderizar la tabla HTML
 function renderTable(products) {
     const tbody = document.getElementById('productTableBody');
@@ -136,7 +142,7 @@ function renderTable(products) {
             <td>${product.unidad_medida_producto}</td>
             <td>${product.categoria_producto}</td>
             <td class="text-center">
-                <button class="btn btn-sm btn-warning me-2" onclick='editProduct(${JSON.stringify(product)})'><i class="bi bi-pencil"></i> Editar</button>
+                <button class="btn btn-sm btn-warning me-2" onclick="editProduct(${product.id_producto})"><i class="bi bi-pencil"></i> Editar</button>
                 <button class="btn btn-sm btn-danger" onclick="deleteProduct(${product.id_producto})"><i class="bi bi-trash"></i> Eliminar</button>
             </td>
         `;
@@ -173,26 +179,40 @@ function renderPagination(pagination) {
 }
 
 // Abrir modal para crear
-function openModal() {
-    if (!productModal) return;
+window.openModal = function() {
+    if (!productModal) {
+        console.error('Modal not initialized');
+        return;
+    }
     document.getElementById('productId').value = '';
     document.getElementById('nombre').value = '';
     document.getElementById('unidad').value = '';
     document.getElementById('categoria').value = '';
     document.getElementById('modalTitle').innerText = 'Nuevo Producto';
     productModal.show();
-}
+};
 
 // Abrir modal para editar (llenar datos)
-function editProduct(product) {
-    if (!productModal) return;
-    document.getElementById('productId').value = product.id_producto;
-    document.getElementById('nombre').value = product.nombre_producto;
-    document.getElementById('unidad').value = product.unidad_medida_producto;
-    document.getElementById('categoria').value = product.categoria_producto;
-    document.getElementById('modalTitle').innerText = 'Editar Producto';
-    productModal.show();
-}
+window.editProduct = async function(id) {
+    if (!productModal) {
+        console.error('Modal not initialized');
+        return;
+    }
+    try {
+        const response = await fetch(`${API_URL}/${id}`);
+        const result = await response.json();
+        if (result.state === 1) {
+            document.getElementById('productId').value = result.data.id_producto;
+            document.getElementById('nombre').value = result.data.nombre_producto;
+            document.getElementById('unidad').value = result.data.unidad_medida_producto;
+            document.getElementById('categoria').value = result.data.categoria_producto;
+            document.getElementById('modalTitle').innerText = 'Editar Producto';
+            productModal.show();
+        }
+    } catch (error) {
+        console.error('Error cargando producto:', error);
+    }
+};
 
 // Guardar producto (POST o PUT)
 async function saveProduct() {
@@ -244,7 +264,7 @@ async function saveProduct() {
 }
 
 // Eliminar producto (DELETE)
-async function deleteProduct(id) {
+window.deleteProduct = async function(id) {
     const resultConfirm = await Swal.fire({
         title: '¿Está seguro?',
         text: "No podrás revertir esto!",
@@ -280,7 +300,7 @@ async function deleteProduct(id) {
 // ==================== FUNCIONES PARA CIERRES ====================
 
 // Función para obtener y listar cierres (GET)
-async function loadCierres(page = 1) {
+window.loadCierres = async function(page = 1) {
     currentCierrePage = page;
     const fechaInicio = document.getElementById('fechaInicio').value;
     const fechaFinal = document.getElementById('fechaFinal').value;
@@ -308,7 +328,7 @@ async function loadCierres(page = 1) {
 }
 
 // Función para exportar a PDF
-async function exportToPDF() {
+window.exportToPDF = async function() {
     const fechaInicio = document.getElementById('fechaInicio').value;
     const fechaFinal = document.getElementById('fechaFinal').value;
 
@@ -427,7 +447,7 @@ function renderCierrePagination(pagination) {
 }
 
 // Abrir modal para crear/editar cierre
-async function openCierreModal(id = null) {
+window.openCierreModal = async function(id = null) {
     if (!cierreModal) return;
     await loadProductosForSelect();
     document.getElementById('cierreId').value = id || '';
@@ -526,12 +546,12 @@ async function saveCierre() {
 }
 
 // Editar cierre
-function editCierre(id) {
+window.editCierre = function(id) {
     openCierreModal(id);
 }
 
 // Eliminar cierre (DELETE)
-async function deleteCierre(id) {
+window.deleteCierre = async function(id) {
     const resultConfirm = await Swal.fire({
         title: '¿Está seguro?',
         text: "No podrás revertir esto!",
