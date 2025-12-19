@@ -64,7 +64,7 @@ foreach ($routes as $routeDef => $handler) {
 
     if (preg_match($pattern, $path, $matches)) {
         array_shift($matches); // Eliminar la coincidencia completa, dejar solo los parámetros
-        $controller = new $handler[0](); // Instanciar ProductController
+        $controller = new $handler[0]($pdo); // Instanciar ProductController con la conexión
         call_user_func_array([$controller, $handler[1]], $matches); // Llamar al método
         $matched = true;
         break;
