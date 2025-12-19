@@ -34,18 +34,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const productosLink = document.getElementById('productosLink');
     const cierresLink = document.getElementById('cierresLink');
     if (dashboardLink) {
-        dashboardLink.addEventListener('click', () => {
+        dashboardLink.addEventListener('click', (e) => {
+            e.preventDefault();
             showSection('dashboard');
         });
     }
     if (productosLink) {
-        productosLink.addEventListener('click', () => {
+        productosLink.addEventListener('click', (e) => {
+            e.preventDefault();
             showSection('productos');
             loadProducts(1, currentSearch);
         });
     }
     if (cierresLink) {
-        cierresLink.addEventListener('click', () => {
+        cierresLink.addEventListener('click', (e) => {
+            e.preventDefault();
             showSection('cierres');
             loadCierres();
         });
@@ -353,7 +356,7 @@ window.exportToPDF = async function() {
             '#': index + 1,
             'ID': item.id_cierre_invetarios.toString().padStart(4, '0'),
             'Fecha': item.fecha,
-            'Día': new Date(item.fecha).toLocaleDateString('es-ES', { weekday: 'long' }),
+            'Día': new Date(item.fecha + 'T00:00:00').toLocaleDateString('es-ES', { weekday: 'long' }),
             'Producto': item.nombre_producto,
             'Unidad de Medida': item.unidad_medida_producto,
             'Categoría': item.categoria_producto,
