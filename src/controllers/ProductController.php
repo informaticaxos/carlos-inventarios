@@ -6,88 +6,87 @@ class ProductController
 {
     private $productModel;
 
-    public function __construct()
+    public function __construct($pdo)
     {
-        // TODO: Obtener la instancia de conexión a la base de datos de tu configuración
-        // Ejemplo: $pdo = Database::getConnection();
-        // Por ahora, asumiremos que $pdo está disponible o se pasa globalmente
-        global $pdo; 
-        
-        if ($pdo) {
-            $this->productModel = new Product($pdo);
-        }
+        $this->productModel = new Product($pdo);
     }
 
+    // GET /producto
     public function getAll()
     {
-        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-        $limit = 5; // Cantidad de productos por página
-        $offset = ($page - 1) * $limit;
+        // Obtener parámetros de paginación de la URL (ej: ?limit=10&offset=0)
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 100;
+        $offset = isset($_GET['offset']) ? (int)$_GET['offset'] : 0;
 
-        $totalRecords = $this->productModel->countAll();
-        $totalPages = ceil($totalRecords / $limit);
-        $products = $this->productModel->getAll($limit, $offset);
-
+        $data = $this->productModel->getAll($limit, $offset);
         echo json_encode([
-            'state' => 1,
-            'message' => 'Listado de productos obtenido con éxito',
-            'data' => $products,
-            'pagination' => [
-                'current_page' => $page,
-                'total_pages' => $totalPages,
-                'total_records' => $totalRecords
-            ]
+            "state" => 1,
+            "data" => $data
         ]);
     }
 
+    // GET /producto/{id}
     public function getById($id)
     {
-        $product = $this->productModel->getById($id);
-        if ($product) {
+        $data = $this->productModel->getById($id);
+        if ($data) {
             echo json_encode([
-                'state' => 1,
-                'message' => 'Producto encontrado',
-                'data' => $product
+                "state" => 1,
+                "data" => $data
             ]);
         } else {
             http_response_code(404);
-            echo json_encode(['state' => 0, 'message' => 'Producto no encontrado', 'data' => []]);
+            echo json_encode([
+                "state" => 0,
+                "message" => "Producto no encontrado"
+            ]);
         }
     }
 
+    // POST /producto
     public function create()
     {
-        $data = json_decode(file_get_contents('php://input'), true);
-        
-        if (!empty($data['nombre_producto']) && !empty($data['unidad_medida_producto']) && !empty($data['categoria_producto'])) {
-            $id = $this->productModel->create($data);
+        // Leer el JSON enviado en el cuerpo de la petición
+        $input = json_decode(file_get_contents('php://input'), true);
+
+        if (isset($input['nombre_producto'], $input['unidad_medida_producto'], $input['categoria_producto'])) {
+            $id = $this->productModel->create($input);
+            http_response_code(201);
             echo json_encode([
-                'state' => 1, 
-                'message' => 'Producto creado con éxito', 
-                'data' => ['id_producto' => $id]
+                "state" => 1,
+                "message" => "Producto creado exitosamente",
+                "id" => $id
             ]);
         } else {
             http_response_code(400);
-            echo json_encode(['state' => 0, 'message' => 'Datos incompletos', 'data' => []]);
+            echo json_encode([
+                "state" => 0,
+                "message" => "Datos incompletos. Se requiere nombre_producto, unidad_medida_producto y categoria_producto"
+            ]);
         }
     }
 
+    // PUT /producto/{id}
     public function update($id)
     {
-        $data = json_decode(file_get_contents('php://input'), true);
+        $input = json_decode(file_get_contents('php://input'), true);
         
-        if (!empty($data['nombre_producto']) && !empty($data['unidad_medida_producto']) && !empty($data['categoria_producto'])) {
-            $success = $this->productModel->update($id, $data);
-            echo json_encode(['state' => 1, 'message' => 'Producto actualizado con éxito', 'data' => []]);
+        if ($this->productModel->update($id, $input)) {
+            echo json_encode(["state" => 1, "message" => "Producto actualizado"]);
         } else {
-            http_response_code(400);
-            echo json_encode(['state' => 0, 'message' => 'Datos incompletos', 'data' => []]);
+            http_response_code(500);
+            echo json_encode(["state" => 0, "message" => "No se pudo actualizar el producto"]);
         }
     }
 
+    // DELETE /producto/{id}
     public function delete($id)
     {
-        $success = $this->productModel->delete($id);
-        echo json_encode(['state' => 1, 'message' => 'Producto eliminado con éxito', 'data' => []]);
+        if ($this->productModel->delete($id)) {
+            echo json_encode(["state" => 1, "message" => "Producto eliminado"]);
+        } else {
+            http_response_code(500);
+            echo json_encode(["state" => 0, "message" => "No se pudo eliminar el producto"]);
+        }
     }
 }
