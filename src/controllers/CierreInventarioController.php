@@ -48,6 +48,25 @@ class CierreInventarioController
         ]);
     }
 
+    // GET /cierre_inventario
+    public function getAll()
+    {
+        if (isset($_GET['all'])) {
+            $data = $this->cierreRepository->findAll(null, 0);
+            echo json_encode([
+                "state" => 1,
+                "data" => $data
+            ]);
+        } else {
+            // Default to today's date range or something, but for now, perhaps redirect to rango
+            http_response_code(400);
+            echo json_encode([
+                "state" => 0,
+                "message" => "Use /rango para consultas con fechas"
+            ]);
+        }
+    }
+
     // GET /cierre_inventario/{id}
     public function getById($id)
     {

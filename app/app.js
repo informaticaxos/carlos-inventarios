@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         dashboardLink.addEventListener('click', (e) => {
             e.preventDefault();
             showSection('dashboard');
+            loadDashboard();
         });
     }
     if (productosLink) {
@@ -53,6 +54,9 @@ document.addEventListener('DOMContentLoaded', () => {
             loadCierres();
         });
     }
+
+    // Cargar dashboard inicial
+    loadDashboard();
 
     // Search on Enter
     const searchInput = document.getElementById('searchInput');
@@ -73,6 +77,34 @@ function showSection(section) {
     document.getElementById('dashboardLink').classList.toggle('active', section === 'dashboard');
     document.getElementById('productosLink').classList.toggle('active', section === 'productos');
     document.getElementById('cierresLink').classList.toggle('active', section === 'cierres');
+}
+
+// Función para cargar datos del dashboard
+async function loadDashboard() {
+    try {
+        // Fecha actual
+        const today = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('currentDate').textContent = today.toLocaleDateString('es-ES', options);
+
+        // Total productos
+        const productosResponse = await fetch(`${API_URL}?all=true`);
+        const productosData = await productosResponse.json();
+        document.getElementById('totalProductos').textContent = productosData.state === 1 ? productosData.data.length : 'Error';
+
+        // Cierres hoy
+        const fechaHoy = today.toISOString().split('T')[0];
+        const cierresHoyResponse = await fetch(`${CIERRE_API_URL}/rango?fecha_inicio=${fechaHoy}&fecha_final=${fechaHoy}&page=1&limit=10000`);
+        const cierresHoyData = await cierresHoyResponse.json();
+        document.getElementById('cierresHoy').textContent = cierresHoyData.state === 1 ? cierresHoyData.data.length : 'Error';
+
+        // Total cierres
+        const cierresResponse = await fetch(`${CIERRE_API_URL}?all=true`);
+        const cierresData = await cierresResponse.json();
+        document.getElementById('totalCierres').textContent = cierresData.state === 1 ? cierresData.data.length : 'Error';
+    } catch (error) {
+        console.error('Error cargando dashboard:', error);
+    }
 }
 
 // Función para mostrar/ocultar loading
