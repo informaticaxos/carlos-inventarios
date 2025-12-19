@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 // --- CONFIGURACIÓN DE BASE DE DATOS ---
-require_once __DIR__ . '/../src/config/Database.php';
+require_once __DIR__ . '/src/config/Database.php';
 
 $database = new Database();
 $pdo = $database->getConnection();
