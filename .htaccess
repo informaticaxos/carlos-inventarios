@@ -1,0 +1,24 @@
+# Activar motor de reescritura
+RewriteEngine On
+
+# Evitar conflictos de negociación de contenido (recomendado para APIs)
+Options -MultiViews
+
+# Definir la base de la carpeta donde está tu proyecto
+RewriteBase /carlos-inventarios/
+
+# Permitir encabezados de autorización (necesario para JWT o Auth básica)
+RewriteCond %{HTTP:Authorization} .
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+# --- Enrutamiento Dinámico de API ---
+# Captura cualquier petición tipo /api/algo o /api/algo/123 y la envía a api/algo.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^api/([a-z0-9_-]+)(/.*)?$ api/$1.php [L,QSA]
+
+# --- Seguridad básica ---
+# Bloquear acceso directo a archivos sensibles
+<FilesMatch "\.(htaccess|htpasswd|ini|log|sh)$">
+  Require all denied
+</FilesMatch>

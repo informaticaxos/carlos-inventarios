@@ -1,7 +1,7 @@
 <?php
 
-require_once __DIR__ . '../config/Database.php';
-require_once __DIR__ . '../models/ProductModel.php';
+require_once __DIR__ . '/../config/Database.php';
+require_once __DIR__ . '/../models/ProductModel.php';
 
 /**
  * Repositorio para la entidad Product
