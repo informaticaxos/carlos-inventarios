@@ -7,22 +7,18 @@ Options -MultiViews
 # Definir la base de la carpeta donde está tu proyecto
 RewriteBase /carlos-inventarios/
 
-# --- Reglas para la API ---
-# Producto
+# --- Endpoints: Producto ---
+# Ruta específica con ID (ej: GET /api/producto/123, PUT /api/producto/123)
+RewriteRule ^api/producto/([0-9]+)/?$ api/producto.php?id=$1 [L,QSA]
+# Ruta general (ej: GET /api/producto, POST /api/producto)
 RewriteRule ^api/producto/?$ api/producto.php [L,QSA]
 
-# Cliente
+# --- Endpoints: Cliente ---
+RewriteRule ^api/cliente/([0-9]+)/?$ api/cliente.php?id=$1 [L,QSA]
 RewriteRule ^api/cliente/?$ api/cliente.php [L,QSA]
 
-# Inventario
+# --- Endpoints: Inventario ---
 RewriteRule ^api/inventario/?$ api/inventario.php [L,QSA]
-
-# --- Opcional: Capturar parámetros dinámicos ---
-# Ejemplo: /api/producto/123 → api/producto.php?id=123
-RewriteRule ^api/producto/([0-9]+)/?$ api/producto.php?id=$1 [L,QSA]
-
-# Ejemplo: /api/cliente/45 → api/cliente.php?id=45
-RewriteRule ^api/cliente/([0-9]+)/?$ api/cliente.php?id=$1 [L,QSA]
 
 # --- Seguridad básica ---
 # Bloquear acceso directo a archivos sensibles
