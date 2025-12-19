@@ -20,6 +20,10 @@ $path = str_replace($base, '', $url);
 
 if ($path === '' || $path === '/') {
     $id = null;
+} elseif ($path === '/rango') {
+    // Endpoint especial para rango de fechas
+    $controller->getByDateRange();
+    exit;
 } elseif (preg_match('/^\/(\d+)$/', $path, $matches)) {
     $id = $matches[1];
 } else {

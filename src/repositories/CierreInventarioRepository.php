@@ -26,7 +26,7 @@ class CierreInventarioRepository
      */
     public function findAll($limit = null, $offset = 0)
     {
-        $sql = "SELECT * FROM cierre_inventario";
+        $sql = "SELECT * FROM cierre_inventario ORDER BY fecha DESC";
         if ($limit !== null) {
             $sql .= " LIMIT $limit OFFSET $offset";
         }
@@ -42,6 +42,40 @@ class CierreInventarioRepository
     public function count()
     {
         $stmt = $this->pdo->query("SELECT COUNT(*) FROM cierre_inventario");
+        return $stmt->fetchColumn();
+    }
+
+    /**
+     * Obtiene registros de cierre_inventario por rango de fechas
+     *
+     * @param string $fechaInicio
+     * @param string $fechaFinal
+     * @param int|null $limit
+     * @param int $offset
+     * @return array
+     */
+    public function findByDateRange($fechaInicio, $fechaFinal, $limit = null, $offset = 0)
+    {
+        $sql = "SELECT * FROM cierre_inventario WHERE fecha BETWEEN ? AND ? ORDER BY fecha DESC";
+        if ($limit !== null) {
+            $sql .= " LIMIT $limit OFFSET $offset";
+        }
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$fechaInicio, $fechaFinal]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Cuenta el total de cierre_inventario por rango de fechas
+     *
+     * @param string $fechaInicio
+     * @param string $fechaFinal
+     * @return int
+     */
+    public function countByDateRange($fechaInicio, $fechaFinal)
+    {
+        $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM cierre_inventario WHERE fecha BETWEEN ? AND ?");
+        $stmt->execute([$fechaInicio, $fechaFinal]);
         return $stmt->fetchColumn();
     }
 

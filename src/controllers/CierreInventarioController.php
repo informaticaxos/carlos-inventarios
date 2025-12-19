@@ -12,20 +12,32 @@ class CierreInventarioController
         $this->cierreRepository = new CierreInventarioRepository($pdo);
     }
 
-    // GET /cierre_inventario
-    public function getAll()
+    // GET /cierre_inventario/rango
+    public function getByDateRange()
     {
+        if (!isset($_GET['fecha_inicio']) || !isset($_GET['fecha_final'])) {
+            http_response_code(400);
+            echo json_encode([
+                "state" => 0,
+                "message" => "Parámetros 'fecha_inicio' y 'fecha_final' son requeridos",
+                "data" => []
+            ]);
+            return;
+        }
+
+        $fechaInicio = $_GET['fecha_inicio'];
+        $fechaFinal = $_GET['fecha_final'];
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $perPage = 10;
         $offset = ($page - 1) * $perPage;
 
-        $data = $this->cierreRepository->findAll($perPage, $offset);
-        $total = $this->cierreRepository->count();
+        $data = $this->cierreRepository->findByDateRange($fechaInicio, $fechaFinal, $perPage, $offset);
+        $total = $this->cierreRepository->countByDateRange($fechaInicio, $fechaFinal);
         $lastPage = ceil($total / $perPage);
 
         echo json_encode([
             "state" => 1,
-            "message" => "Datos obtenidos exitosamente",
+            "message" => "Datos obtenidos exitosamente por rango de fechas",
             "data" => $data,
             "pagination" => [
                 "current_page" => $page,
