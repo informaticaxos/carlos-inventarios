@@ -7,24 +7,41 @@ let currentCierrePage = 1;
 
 // Inicialización al cargar la página
 document.addEventListener('DOMContentLoaded', () => {
-    productModal = new bootstrap.Modal(document.getElementById('productModal'));
-    cierreModal = new bootstrap.Modal(document.getElementById('cierreModal'));
+    const productModalEl = document.getElementById('productModal');
+    const cierreModalEl = document.getElementById('cierreModal');
+    
+    if (productModalEl && typeof bootstrap !== 'undefined') {
+        productModal = new bootstrap.Modal(productModalEl);
+    }
+    if (cierreModalEl && typeof bootstrap !== 'undefined') {
+        cierreModal = new bootstrap.Modal(cierreModalEl);
+    }
     
     // Set default dates to today
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('fechaInicio').value = today;
-    document.getElementById('fechaFinal').value = today;
+    const fechaInicioEl = document.getElementById('fechaInicio');
+    const fechaFinalEl = document.getElementById('fechaFinal');
+    if (fechaInicioEl && fechaFinalEl) {
+        const today = new Date().toISOString().split('T')[0];
+        fechaInicioEl.value = today;
+        fechaFinalEl.value = today;
+    }
     
     loadProducts();
     
     // Navigation
-    document.getElementById('productosLink').addEventListener('click', () => {
-        showSection('productos');
-    });
-    document.getElementById('cierresLink').addEventListener('click', () => {
-        showSection('cierres');
-        loadCierres();
-    });
+    const productosLink = document.getElementById('productosLink');
+    const cierresLink = document.getElementById('cierresLink');
+    if (productosLink) {
+        productosLink.addEventListener('click', () => {
+            showSection('productos');
+        });
+    }
+    if (cierresLink) {
+        cierresLink.addEventListener('click', () => {
+            showSection('cierres');
+            loadCierres();
+        });
+    }
 });
 
 function showSection(section) {
@@ -114,6 +131,7 @@ function renderPagination(pagination) {
 
 // Abrir modal para crear
 function openModal() {
+    if (!productModal) return;
     document.getElementById('productId').value = '';
     document.getElementById('nombre').value = '';
     document.getElementById('unidad').value = '';
@@ -124,6 +142,7 @@ function openModal() {
 
 // Abrir modal para editar (llenar datos)
 function editProduct(product) {
+    if (!productModal) return;
     document.getElementById('productId').value = product.id_producto;
     document.getElementById('nombre').value = product.nombre_producto;
     document.getElementById('unidad').value = product.unidad_medida_producto;
@@ -162,7 +181,7 @@ async function saveProduct() {
         const result = await response.json();
 
         if (result.state === 1) {
-            productModal.hide();
+            if (productModal) productModal.hide();
             loadProducts(); // Recargar tabla
             Swal.fire({
                 icon: 'success',
@@ -285,6 +304,7 @@ function renderCierrePagination(pagination) {
 
 // Abrir modal para crear/editar cierre
 async function openCierreModal(id = null) {
+    if (!cierreModal) return;
     await loadProductosForSelect();
     document.getElementById('cierreId').value = id || '';
     document.getElementById('cierreModalTitle').textContent = id ? 'Editar Cierre' : 'Nuevo Cierre';
@@ -362,7 +382,7 @@ async function saveCierre() {
         const result = await response.json();
 
         if (result.state === 1) {
-            cierreModal.hide();
+            if (cierreModal) cierreModal.hide();
             loadCierres(); // Recargar tabla
             Swal.fire({
                 icon: 'success',

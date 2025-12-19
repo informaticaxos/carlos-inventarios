@@ -38,7 +38,7 @@ try {
             if ($id) {
                 $controller->getById($id);
             } else {
-                $controller->getAll();
+                
             }
             break;
         case 'POST':
