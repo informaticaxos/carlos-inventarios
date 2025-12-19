@@ -24,10 +24,25 @@ class ProductRepository
      *
      * @return array
      */
-    public function findAll()
+    public function findAll($limit = null, $offset = 0)
     {
-        $stmt = $this->pdo->query("SELECT * FROM producto");
+        $sql = "SELECT * FROM producto";
+        if ($limit !== null) {
+            $sql .= " LIMIT $limit OFFSET $offset";
+        }
+        $stmt = $this->pdo->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Cuenta el total de productos
+     *
+     * @return int
+     */
+    public function count()
+    {
+        $stmt = $this->pdo->query("SELECT COUNT(*) FROM producto");
+        return $stmt->fetchColumn();
     }
 
     /**

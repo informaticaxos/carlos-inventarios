@@ -15,11 +15,23 @@ class ProductController
     // GET /producto
     public function getAll()
     {
-        // El repositorio actual devuelve todos, se podría implementar paginación en el repo después
-        $data = $this->productRepository->findAll();
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $perPage = 10;
+        $offset = ($page - 1) * $perPage;
+
+        $data = $this->productRepository->findAll($perPage, $offset);
+        $total = $this->productRepository->count();
+        $lastPage = ceil($total / $perPage);
+
         echo json_encode([
             "state" => 1,
-            "data" => $data
+            "data" => $data,
+            "pagination" => [
+                "current_page" => $page,
+                "per_page" => $perPage,
+                "total" => $total,
+                "last_page" => $lastPage
+            ]
         ]);
     }
 
