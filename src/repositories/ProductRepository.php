@@ -26,7 +26,7 @@ class ProductRepository
      */
     public function findAll($limit = null, $offset = 0)
     {
-        $sql = "SELECT * FROM producto";
+        $sql = "SELECT * FROM producto ORDER BY id_producto DESC";
         if ($limit !== null) {
             $sql .= " LIMIT $limit OFFSET $offset";
         }
