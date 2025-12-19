@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../config/Database.php';
 require_once __DIR__ . '/../models/ProductModel.php';
 
 /**
@@ -14,9 +14,9 @@ class ProductRepository
     /**
      * Constructor: obtiene la conexión a la base de datos
      */
-    public function __construct()
+    public function __construct($pdo = null)
     {
-        $this->pdo = Database::getConnection();
+        $this->pdo = $pdo ?: Database::getConnection();
     }
 
     /**
