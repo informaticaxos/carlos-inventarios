@@ -64,8 +64,33 @@
                 <div class="modal-body">
                     <input type="hidden" id="productId">
                     <div class="mb-3"><label class="form-label">Nombre del Producto</label><input type="text" class="form-control" id="nombre" required></div>
-                    <div class="mb-3"><label class="form-label">Unidad de Medida</label><input type="text" class="form-control" id="unidad" required></div>
-                    <div class="mb-3"><label class="form-label">Categoría</label><input type="text" class="form-control" id="categoria" required></div>
+                    <div class="mb-3">
+                        <label class="form-label">Unidad de Medida</label>
+                        <select class="form-select" id="unidad" required>
+                            <option value="">Seleccione...</option>
+                            <option value="KG">KG</option>
+                            <option value="GR">GR</option>
+                            <option value="UN">UN</option>
+                            <option value="LT">LT</option>
+                            <option value="ML">ML</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Categoría</label>
+                        <select class="form-select" id="categoria" required>
+                            <option value="">Seleccione...</option>
+                            <option value="PRODUCTOS DE LIMPIEZA">PRODUCTOS DE LIMPIEZA</option>
+                            <option value="PLASTICOS">PLASTICOS</option>
+                            <option value="FRUTAS">FRUTAS</option>
+                            <option value="PANADERIA">PANADERIA</option>
+                            <option value="ABARROTES">ABARROTES</option>
+                            <option value="LACTEOS">LACTEOS</option>
+                            <option value="EMBUTIDOS">EMBUTIDOS</option>
+                            <option value="CONFITERIA">CONFITERIA</option>
+                            <option value="VERDURAS">VERDURAS</option>
+                            <option value="CARNICOS">CARNICOS</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
