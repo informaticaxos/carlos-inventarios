@@ -28,7 +28,7 @@ class CierreInventarioController
         $fechaInicio = $_GET['fecha_inicio'];
         $fechaFinal = $_GET['fecha_final'];
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-        $perPage = 10;
+        $perPage = isset($_GET['limit']) ? min((int)$_GET['limit'], 10000) : 10;
         $offset = ($page - 1) * $perPage;
 
         $data = $this->cierreRepository->findByDateRange($fechaInicio, $fechaFinal, $perPage, $offset);

@@ -261,6 +261,84 @@ async function loadCierres(page = 1) {
     }
 }
 
+// Función para exportar a PDF
+async function exportToPDF() {
+    const fechaInicio = document.getElementById('fechaInicio').value;
+    const fechaFinal = document.getElementById('fechaFinal').value;
+
+    try {
+        // Obtener todos los datos (asumiendo que la API soporta un límite alto)
+        const response = await fetch(`${CIERRE_API_URL}/rango?fecha_inicio=${fechaInicio}&fecha_final=${fechaFinal}&page=1&limit=10000`);
+        const result = await response.json();
+
+        if (result.state !== 1) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No se pudieron obtener los datos para exportar.'
+            });
+            return;
+        }
+
+        const data = result.data;
+
+        // Procesar datos
+        const processedData = data.map((item, index) => ({
+            '#': index + 1,
+            'ID': item.id_cierre_invetarios.toString().padStart(4, '0'),
+            'Fecha': item.fecha,
+            'Día': new Date(item.fecha).toLocaleDateString('es-ES', { weekday: 'long' }),
+            'Producto': item.nombre_producto,
+            'Unidad de Medida': item.unidad_medida_producto,
+            'Categoría': item.categoria_producto,
+            'Cantidad': item.cantidad
+        }));
+
+        // Generar PDF
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('landscape');
+
+        // Cabecera
+        doc.setFontSize(16);
+        doc.text(`Cierres de Inventario - Del ${fechaInicio} al ${fechaFinal}`, 10, 20);
+
+        // Tabla
+        doc.autoTable({
+            head: [['#', 'ID', 'Fecha', 'Día', 'Producto', 'Unidad de Medida', 'Categoría', 'Cantidad']],
+            body: processedData.map(item => [
+                item['#'],
+                item['ID'],
+                item['Fecha'],
+                item['Día'],
+                item['Producto'],
+                item['Unidad de Medida'],
+                item['Categoría'],
+                item['Cantidad']
+            ]),
+            startY: 30,
+            styles: { fontSize: 8 },
+            headStyles: { fillColor: [41, 128, 185] },
+        });
+
+        // Descargar
+        doc.save(`cierres_${fechaInicio}_a_${fechaFinal}.pdf`);
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Exportado',
+            text: 'El PDF se ha descargado correctamente.'
+        });
+
+    } catch (error) {
+        console.error('Error exportando PDF:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hubo un problema al exportar el PDF.'
+        });
+    }
+}
+
 // Renderizar la tabla de cierres
 function renderCierreTable(cierres) {
     const tbody = document.getElementById('cierreTableBody');
