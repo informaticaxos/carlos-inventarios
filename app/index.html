@@ -82,25 +82,21 @@
 
             <!-- Sección Cierres -->
             <div id="cierresSection" style="display: none;">
-                <div class="d-flex justify-content-between mb-3">
-                    <div class="d-flex">
-                        <div class="me-2">
+                <div class="mb-3">
+                    <div class="d-flex flex-column flex-sm-row mb-3">
+                        <div class="me-sm-2 mb-2 mb-sm-0">
                             <label for="fechaInicio" class="form-label">Fecha Inicial</label>
                             <input type="date" class="form-control" id="fechaInicio">
                         </div>
-                        <div class="me-2">
+                        <div class="mb-2 mb-sm-0">
                             <label for="fechaFinal" class="form-label">Fecha Final</label>
                             <input type="date" class="form-control" id="fechaFinal">
                         </div>
-                        <div class="d-flex align-items-end">
-                            <button class="btn btn-secondary me-2" onclick="loadCierres()">Filtrar</button>
-                            <button class="btn btn-success" onclick="exportToPDF()">Exportar PDF</button>
-                        </div>
                     </div>
-                    <div>
-                        <button class="btn btn-primary" onclick="openCierreModal()">
-                            Nuevo Cierre
-                        </button>
+                    <div class="d-flex flex-column flex-sm-row">
+                        <button class="btn btn-secondary me-sm-2 mb-2 mb-sm-0" onclick="loadCierres()">Filtrar</button>
+                        <button class="btn btn-success me-sm-2 mb-2 mb-sm-0" onclick="exportToPDF()">Exportar PDF</button>
+                        <button class="btn btn-primary" onclick="openCierreModal()">Nuevo Cierre</button>
                     </div>
                 </div>
 
