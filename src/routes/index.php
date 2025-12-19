@@ -21,6 +21,8 @@ $pdo = $database->getConnection();
 // --- CARGA DE DEPENDENCIAS ---
 require_once __DIR__ . '/../controllers/ProductController.php';
 require_once __DIR__ . '/ProductRoute.php';
+require_once __DIR__ . '/../controllers/InventoryClosingController.php';
+require_once __DIR__ . '/InventoryClosingRoute.php';
 
 // --- ENRUTADOR (ROUTER) ---
 
