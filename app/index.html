@@ -51,7 +51,11 @@
             
             <!-- Sección Productos -->
             <div id="productosSection">
-                <div class="d-flex justify-content-end mb-3">
+                <div class="d-flex justify-content-between mb-3">
+                    <div class="d-flex">
+                        <input type="text" class="form-control me-2" id="searchInput" placeholder="Buscar por nombre de producto">
+                        <button class="btn btn-outline-secondary" onclick="searchProducts()">Buscar</button>
+                    </div>
                     <button class="btn btn-primary" onclick="openModal()">
                         Nuevo Producto
                     </button>

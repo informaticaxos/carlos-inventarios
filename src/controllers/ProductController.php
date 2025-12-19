@@ -18,9 +18,10 @@ class ProductController
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $perPage = 10;
         $offset = ($page - 1) * $perPage;
+        $search = isset($_GET['search']) ? trim($_GET['search']) : null;
 
-        $data = $this->productRepository->findAll($perPage, $offset);
-        $total = $this->productRepository->count();
+        $data = $this->productRepository->findAll($perPage, $offset, $search);
+        $total = $this->productRepository->count($search);
         $lastPage = ceil($total / $perPage);
 
         echo json_encode([

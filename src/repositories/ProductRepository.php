@@ -24,13 +24,20 @@ class ProductRepository
      *
      * @return array
      */
-    public function findAll($limit = null, $offset = 0)
+    public function findAll($limit = null, $offset = 0, $search = null)
     {
-        $sql = "SELECT * FROM producto ORDER BY id_producto DESC";
+        $sql = "SELECT * FROM producto";
+        $params = [];
+        if ($search) {
+            $sql .= " WHERE nombre_producto LIKE ?";
+            $params[] = "%$search%";
+        }
+        $sql .= " ORDER BY id_producto DESC";
         if ($limit !== null) {
             $sql .= " LIMIT $limit OFFSET $offset";
         }
-        $stmt = $this->pdo->query($sql);
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -39,9 +46,16 @@ class ProductRepository
      *
      * @return int
      */
-    public function count()
+    public function count($search = null)
     {
-        $stmt = $this->pdo->query("SELECT COUNT(*) FROM producto");
+        $sql = "SELECT COUNT(*) FROM producto";
+        $params = [];
+        if ($search) {
+            $sql .= " WHERE nombre_producto LIKE ?";
+            $params[] = "%$search%";
+        }
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
         return $stmt->fetchColumn();
     }
 

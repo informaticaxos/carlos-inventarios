@@ -4,6 +4,7 @@ let productModal;
 let cierreModal;
 let currentPage = 1;
 let currentCierrePage = 1;
+let currentSearch = '';
 
 // Inicialización al cargar la página
 document.addEventListener('DOMContentLoaded', () => {
@@ -26,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fechaFinalEl.value = today;
     }
     
-    loadProducts();
+    loadProducts(1, currentSearch);
     
     // Navigation
     const productosLink = document.getElementById('productosLink');
@@ -42,6 +43,16 @@ document.addEventListener('DOMContentLoaded', () => {
             loadCierres();
         });
     }
+
+    // Search on Enter
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchProducts();
+            }
+        });
+    }
 });
 
 function showSection(section) {
@@ -52,27 +63,10 @@ function showSection(section) {
     document.getElementById('cierresLink').classList.toggle('active', section === 'cierres');
 }
 
-// Función para obtener y listar productos (GET)
-async function loadProducts(page = 1) {
-    currentPage = page;
-    try {
-        const response = await fetch(`${API_URL}?page=${page}`);
-        const result = await response.json();
-
-        if (result.state === 1) {
-            renderTable(result.data);
-            renderPagination(result.pagination);
-        } else {
-            console.error('Error del servidor:', result.message);
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'No se pudieron cargar los productos: ' + result.message
-            });
-        }
-    } catch (error) {
-        console.error('Error de red:', error);
-    }
+// Función para buscar productos
+function searchProducts() {
+    const searchTerm = document.getElementById('searchInput').value.trim();
+    loadProducts(1, searchTerm);
 }
 
 // Renderizar la tabla HTML
@@ -182,7 +176,7 @@ async function saveProduct() {
 
         if (result.state === 1) {
             if (productModal) productModal.hide();
-            loadProducts(); // Recargar tabla
+            loadProducts(currentPage, currentSearch); // Recargar tabla
             Swal.fire({
                 icon: 'success',
                 title: '¡Éxito!',
@@ -219,7 +213,7 @@ async function deleteProduct(id) {
             const result = await response.json();
 
             if (result.state === 1) {
-                loadProducts();
+                loadProducts(currentPage, currentSearch);
                 Swal.fire('Eliminado!', result.message, 'success');
             } else {
                 Swal.fire({
