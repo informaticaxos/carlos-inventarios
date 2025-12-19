@@ -26,7 +26,7 @@ class CierreInventarioRepository
      */
     public function findAll($limit = null, $offset = 0)
     {
-        $sql = "SELECT * FROM cierre_inventario ORDER BY fecha DESC";
+        $sql = "SELECT c.*, p.nombre_producto FROM cierre_inventario c JOIN producto p ON c.fk_id_producto = p.id_producto ORDER BY c.fecha DESC";
         if ($limit !== null) {
             $sql .= " LIMIT $limit OFFSET $offset";
         }
@@ -56,7 +56,7 @@ class CierreInventarioRepository
      */
     public function findByDateRange($fechaInicio, $fechaFinal, $limit = null, $offset = 0)
     {
-        $sql = "SELECT * FROM cierre_inventario WHERE fecha BETWEEN ? AND ? ORDER BY fecha DESC";
+        $sql = "SELECT c.*, p.nombre_producto FROM cierre_inventario c JOIN producto p ON c.fk_id_producto = p.id_producto WHERE c.fecha BETWEEN ? AND ? ORDER BY c.fecha DESC";
         if ($limit !== null) {
             $sql .= " LIMIT $limit OFFSET $offset";
         }
@@ -87,7 +87,7 @@ class CierreInventarioRepository
      */
     public function findById($id)
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM cierre_inventario WHERE id_cierre_invetarios = ?");
+        $stmt = $this->pdo->prepare("SELECT c.*, p.nombre_producto FROM cierre_inventario c JOIN producto p ON c.fk_id_producto = p.id_producto WHERE c.id_cierre_invetarios = ?");
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }

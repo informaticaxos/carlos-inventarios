@@ -1,12 +1,39 @@
 const API_URL = 'https://nestorcornejo.com/carlos-inventarios/api/producto';
+const CIERRE_API_URL = 'https://nestorcornejo.com/carlos-inventarios/api/cierre_inventario';
 let productModal;
+let cierreModal;
 let currentPage = 1;
+let currentCierrePage = 1;
 
 // Inicialización al cargar la página
 document.addEventListener('DOMContentLoaded', () => {
     productModal = new bootstrap.Modal(document.getElementById('productModal'));
+    cierreModal = new bootstrap.Modal(document.getElementById('cierreModal'));
+    
+    // Set default dates to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('fechaInicio').value = today;
+    document.getElementById('fechaFinal').value = today;
+    
     loadProducts();
+    
+    // Navigation
+    document.getElementById('productosLink').addEventListener('click', () => {
+        showSection('productos');
+    });
+    document.getElementById('cierresLink').addEventListener('click', () => {
+        showSection('cierres');
+        loadCierres();
+    });
 });
+
+function showSection(section) {
+    document.getElementById('productosSection').style.display = section === 'productos' ? 'block' : 'none';
+    document.getElementById('cierresSection').style.display = section === 'cierres' ? 'block' : 'none';
+    document.getElementById('pageTitle').textContent = section === 'productos' ? 'Listado de Productos' : 'Listado de Cierres';
+    document.getElementById('productosLink').classList.toggle('active', section === 'productos');
+    document.getElementById('cierresLink').classList.toggle('active', section === 'cierres');
+}
 
 // Función para obtener y listar productos (GET)
 async function loadProducts(page = 1) {
@@ -174,6 +201,211 @@ async function deleteProduct(id) {
 
             if (result.state === 1) {
                 loadProducts();
+                Swal.fire('Eliminado!', result.message, 'success');
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error al eliminar: ' + result.message
+                });
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+}
+
+// ==================== FUNCIONES PARA CIERRES ====================
+
+// Función para obtener y listar cierres (GET)
+async function loadCierres(page = 1) {
+    currentCierrePage = page;
+    const fechaInicio = document.getElementById('fechaInicio').value;
+    const fechaFinal = document.getElementById('fechaFinal').value;
+    try {
+        const response = await fetch(`${CIERRE_API_URL}/rango?fecha_inicio=${fechaInicio}&fecha_final=${fechaFinal}&page=${page}`);
+        const result = await response.json();
+
+        if (result.state === 1) {
+            renderCierreTable(result.data);
+            renderCierrePagination(result.pagination);
+        } else {
+            console.error('Error del servidor:', result.message);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No se pudieron cargar los cierres: ' + result.message
+            });
+        }
+    } catch (error) {
+        console.error('Error de red:', error);
+    }
+}
+
+// Renderizar la tabla de cierres
+function renderCierreTable(cierres) {
+    const tbody = document.getElementById('cierreTableBody');
+    tbody.innerHTML = '';
+
+    if (cierres.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center">No hay cierres registrados</td></tr>';
+        return;
+    }
+
+    cierres.forEach(cierre => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${cierre.id_cierre_invetarios}</td>
+            <td>${cierre.nombre_producto}</td>
+            <td>${cierre.fecha}</td>
+            <td>${cierre.cantidad}</td>
+            <td class="text-center">
+                <button class="btn btn-warning btn-sm" onclick="editCierre(${cierre.id_cierre_invetarios})">Editar</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteCierre(${cierre.id_cierre_invetarios})">Eliminar</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// Renderizar paginación para cierres
+function renderCierrePagination(pagination) {
+    const container = document.getElementById('cierrePaginationContainer');
+    container.innerHTML = '';
+
+    if (pagination.last_page <= 1) return;
+
+    for (let i = 1; i <= pagination.last_page; i++) {
+        const li = document.createElement('li');
+        li.className = `page-item ${i === pagination.current_page ? 'active' : ''}`;
+        li.innerHTML = `<a class="page-link" href="#" onclick="loadCierres(${i})">${i}</a>`;
+        container.appendChild(li);
+    }
+}
+
+// Abrir modal para crear/editar cierre
+async function openCierreModal(id = null) {
+    await loadProductosForSelect();
+    document.getElementById('cierreId').value = id || '';
+    document.getElementById('cierreModalTitle').textContent = id ? 'Editar Cierre' : 'Nuevo Cierre';
+    
+    if (id) {
+        // Cargar datos para editar
+        try {
+            const response = await fetch(`${CIERRE_API_URL}/${id}`);
+            const result = await response.json();
+            if (result.state === 1) {
+                document.getElementById('cierreProducto').value = result.data.fk_id_producto;
+                document.getElementById('cierreFecha').value = result.data.fecha;
+                document.getElementById('cierreCantidad').value = result.data.cantidad;
+            }
+        } catch (error) {
+            console.error('Error cargando cierre:', error);
+        }
+    } else {
+        // Resetear campos
+        document.getElementById('cierreProducto').value = '';
+        document.getElementById('cierreFecha').value = new Date().toISOString().split('T')[0];
+        document.getElementById('cierreCantidad').value = '';
+    }
+    
+    cierreModal.show();
+}
+
+// Cargar productos para el select
+async function loadProductosForSelect() {
+    try {
+        const response = await fetch(`${API_URL}?page=1`);
+        const result = await response.json();
+        if (result.state === 1) {
+            const select = document.getElementById('cierreProducto');
+            select.innerHTML = '<option value="">Seleccione...</option>';
+            result.data.forEach(product => {
+                const option = document.createElement('option');
+                option.value = product.id_producto;
+                option.textContent = product.nombre_producto;
+                select.appendChild(option);
+            });
+        }
+    } catch (error) {
+        console.error('Error cargando productos:', error);
+    }
+}
+
+// Guardar cierre (POST/PUT)
+async function saveCierre() {
+    const id = document.getElementById('cierreId').value;
+    const data = {
+        fk_id_producto: document.getElementById('cierreProducto').value,
+        fecha: document.getElementById('cierreFecha').value,
+        cantidad: document.getElementById('cierreCantidad').value
+    };
+
+    if (!data.fk_id_producto || !data.fecha || !data.cantidad) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Campos incompletos',
+            text: 'Por favor, complete todos los campos.'
+        });
+        return;
+    }
+
+    const method = id ? 'PUT' : 'POST';
+    const url = id ? `${CIERRE_API_URL}/${id}` : CIERRE_API_URL;
+
+    try {
+        const response = await fetch(url, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        const result = await response.json();
+
+        if (result.state === 1) {
+            cierreModal.hide();
+            loadCierres(); // Recargar tabla
+            Swal.fire({
+                icon: 'success',
+                title: '¡Éxito!',
+                text: result.message
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Error al guardar: ' + result.message
+            });
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+// Editar cierre
+function editCierre(id) {
+    openCierreModal(id);
+}
+
+// Eliminar cierre (DELETE)
+async function deleteCierre(id) {
+    const resultConfirm = await Swal.fire({
+        title: '¿Está seguro?',
+        text: "No podrás revertir esto!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, eliminarlo!',
+        cancelButtonText: 'Cancelar'
+    });
+
+    if (resultConfirm.isConfirmed) {
+        try {
+            const response = await fetch(`${CIERRE_API_URL}/${id}`, { method: 'DELETE' });
+            const result = await response.json();
+
+            if (result.state === 1) {
+                loadCierres();
                 Swal.fire('Eliminado!', result.message, 'success');
             } else {
                 Swal.fire({
