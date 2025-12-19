@@ -78,10 +78,19 @@ function editProduct(product) {
 async function saveProduct() {
     const id = document.getElementById('productId').value;
     const data = {
-        nombre_producto: document.getElementById('nombre').value,
+        nombre_producto: document.getElementById('nombre').value.trim(),
         unidad_medida_producto: document.getElementById('unidad').value,
         categoria_producto: document.getElementById('categoria').value
     };
+
+    if (!data.nombre_producto || !data.unidad_medida_producto || !data.categoria_producto) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Campos incompletos',
+            text: 'Por favor, ingrese un nombre y seleccione una unidad de medida y una categoría.'
+        });
+        return;
+    }
 
     const method = id ? 'PUT' : 'POST';
     const url = id ? `${API_URL}/${id}` : API_URL;

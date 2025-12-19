@@ -47,7 +47,7 @@ class ProductController
     {
         $data = json_decode(file_get_contents('php://input'), true);
         
-        if (isset($data['nombre_producto'], $data['unidad_medida_producto'], $data['categoria_producto'])) {
+        if (!empty($data['nombre_producto']) && !empty($data['unidad_medida_producto']) && !empty($data['categoria_producto'])) {
             $id = $this->productModel->create($data);
             echo json_encode([
                 'state' => 1, 
@@ -64,7 +64,7 @@ class ProductController
     {
         $data = json_decode(file_get_contents('php://input'), true);
         
-        if (isset($data['nombre_producto'], $data['unidad_medida_producto'], $data['categoria_producto'])) {
+        if (!empty($data['nombre_producto']) && !empty($data['unidad_medida_producto']) && !empty($data['categoria_producto'])) {
             $success = $this->productModel->update($id, $data);
             echo json_encode(['state' => 1, 'message' => 'Producto actualizado con éxito', 'data' => []]);
         } else {
