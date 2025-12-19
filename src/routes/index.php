@@ -21,6 +21,10 @@ $pdo = $database->getConnection();
 // --- CARGA DE DEPENDENCIAS ---
 require_once __DIR__ . '/../controllers/ProductController.php';
 require_once __DIR__ . '/ProductRoute.php';
+// require_once __DIR__ . '/../controllers/ClientController.php'; // Descomentar cuando crees el archivo
+// require_once __DIR__ . '/ClientRoute.php'; // Descomentar cuando crees el archivo
+// require_once __DIR__ . '/../controllers/CierreInventarioController.php'; // Ya tienes este controlador
+// require_once __DIR__ . '/CierreInventarioRoute.php'; // Necesitas crear este archivo de rutas
 
 // --- ENRUTADOR (ROUTER) ---
 
