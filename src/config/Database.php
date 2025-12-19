@@ -1,9 +1,9 @@
 <?php
 class Database {
-    private $host = "localhost";
-    private $db_name = "carlos_inventarios";
-    private $username = "root";
-    private $password = "";
+    private $host = "srv1575.hstgr.io";
+    private $db_name = "u564798502_cllaguarima";
+    private $username = "u564798502_cllaguarima";
+    private $password = "Cllaguarima.2025";
     public $conn;
 
     public function getConnection() {

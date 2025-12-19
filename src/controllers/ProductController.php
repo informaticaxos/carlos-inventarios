@@ -47,18 +47,12 @@ class ProductController
         // Leer el JSON enviado en el cuerpo de la petición
         $input = json_decode(file_get_contents('php://input'), true);
 
-        // Validar campos mínimos requeridos según tu modelo (brand, code, etc.)
-        if (isset($input['code']) && isset($input['brand'])) {
+        // Validar campos mínimos requeridos
+        if (isset($input['nombre_producto'])) {
             $product = new Product();
-            $product->setBrand($input['brand'] ?? '');
-            $product->setDescription($input['description'] ?? '');
-            $product->setStock($input['stock'] ?? 0);
-            $product->setCost($input['cost'] ?? 0.0);
-            $product->setPvp($input['pvp'] ?? 0.0);
-            $product->setMin($input['min'] ?? 0);
-            $product->setCode($input['code']);
-            $product->setPercha($input['percha'] ?? '');
-            // aux se genera automáticamente en el repositorio si no se envía
+            $product->setNombreProducto($input['nombre_producto'] ?? '');
+            $product->setUnidadMedidaProducto($input['unidad_medida_producto'] ?? '');
+            $product->setCategoriaProducto($input['categoria_producto'] ?? '');
 
             $this->productRepository->save($product);
 
@@ -66,13 +60,13 @@ class ProductController
             echo json_encode([
                 "state" => 1,
                 "message" => "Producto creado exitosamente",
-                "id" => $product->getIdProduct()
+                "id" => $product->getIdProducto()
             ]);
         } else {
             http_response_code(400);
             echo json_encode([
                 "state" => 0,
-                "message" => "Datos incompletos. Se requiere al menos 'code' y 'brand'"
+                "message" => "Datos incompletos. Se requiere 'nombre_producto'"
             ]);
         }
     }
@@ -93,15 +87,9 @@ class ProductController
         try {
             // Crear objeto con datos existentes y sobrescribir con los nuevos
             $product = new Product($id, 
-                $input['brand'] ?? $existingData['brand'],
-                $input['description'] ?? $existingData['description'],
-                $input['stock'] ?? $existingData['stock'],
-                $input['cost'] ?? $existingData['cost'],
-                $input['pvp'] ?? $existingData['pvp'],
-                $input['min'] ?? $existingData['min'],
-                $input['code'] ?? $existingData['code'],
-                $input['aux'] ?? $existingData['aux'],
-                $input['percha'] ?? $existingData['percha']
+                $input['nombre_producto'] ?? $existingData['nombre_producto'],
+                $input['unidad_medida_producto'] ?? $existingData['unidad_medida_producto'],
+                $input['categoria_producto'] ?? $existingData['categoria_producto']
             );
 
             $this->productRepository->save($product);
