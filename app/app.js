@@ -30,11 +30,18 @@ document.addEventListener('DOMContentLoaded', () => {
     loadProducts(1, currentSearch);
     
     // Navigation
+    const dashboardLink = document.getElementById('dashboardLink');
     const productosLink = document.getElementById('productosLink');
     const cierresLink = document.getElementById('cierresLink');
+    if (dashboardLink) {
+        dashboardLink.addEventListener('click', () => {
+            showSection('dashboard');
+        });
+    }
     if (productosLink) {
         productosLink.addEventListener('click', () => {
             showSection('productos');
+            loadProducts(1, currentSearch);
         });
     }
     if (cierresLink) {
@@ -56,17 +63,59 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function showSection(section) {
+    document.getElementById('dashboardSection').style.display = section === 'dashboard' ? 'block' : 'none';
     document.getElementById('productosSection').style.display = section === 'productos' ? 'block' : 'none';
     document.getElementById('cierresSection').style.display = section === 'cierres' ? 'block' : 'none';
-    document.getElementById('pageTitle').textContent = section === 'productos' ? 'Listado de Productos' : 'Listado de Cierres';
+    document.getElementById('pageTitle').textContent = section === 'dashboard' ? 'Dashboard' : (section === 'productos' ? 'Listado de Productos' : 'Listado de Cierres');
+    document.getElementById('dashboardLink').classList.toggle('active', section === 'dashboard');
     document.getElementById('productosLink').classList.toggle('active', section === 'productos');
     document.getElementById('cierresLink').classList.toggle('active', section === 'cierres');
 }
 
-// Función para buscar productos
-function searchProducts() {
-    const searchTerm = document.getElementById('searchInput').value.trim();
-    loadProducts(1, searchTerm);
+// Función para mostrar/ocultar loading
+function setLoading(isLoading) {
+    const loadingRow = document.getElementById('loadingRow');
+    if (loadingRow) {
+        loadingRow.style.display = isLoading ? 'table-row' : 'none';
+    }
+}
+
+function setCierreLoading(isLoading) {
+    const loadingRow = document.getElementById('cierreLoadingRow');
+    if (loadingRow) {
+        loadingRow.style.display = isLoading ? 'table-row' : 'none';
+    }
+}
+
+// Función para obtener y listar productos (GET)
+async function loadProducts(page = 1, search = '') {
+    currentPage = page;
+    currentSearch = search;
+    setLoading(true);
+    let url = `${API_URL}?page=${page}`;
+    if (search) {
+        url += `&search=${encodeURIComponent(search)}`;
+    }
+    try {
+        const response = await fetch(url);
+        const result = await response.json();
+
+        if (result.state === 1) {
+            renderTable(result.data);
+            renderPagination(result.pagination);
+        } else {
+            console.error('Error del servidor:', result.message);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No se pudieron cargar los productos: ' + result.message
+            });
+        }
+    } catch (error) {
+        console.error('Error de red:', error);
+    } finally {
+        setLoading(false);
+    }
 }
 
 // Renderizar la tabla HTML
@@ -87,8 +136,8 @@ function renderTable(products) {
             <td>${product.unidad_medida_producto}</td>
             <td>${product.categoria_producto}</td>
             <td class="text-center">
-                <button class="btn btn-sm btn-warning me-2" onclick='editProduct(${JSON.stringify(product)})'>Editar</button>
-                <button class="btn btn-sm btn-danger" onclick="deleteProduct(${product.id_producto})">Eliminar</button>
+                <button class="btn btn-sm btn-warning me-2" onclick='editProduct(${JSON.stringify(product)})'><i class="bi bi-pencil"></i> Editar</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteProduct(${product.id_producto})"><i class="bi bi-trash"></i> Eliminar</button>
             </td>
         `;
         tbody.appendChild(tr);
@@ -235,6 +284,7 @@ async function loadCierres(page = 1) {
     currentCierrePage = page;
     const fechaInicio = document.getElementById('fechaInicio').value;
     const fechaFinal = document.getElementById('fechaFinal').value;
+    setCierreLoading(true);
     try {
         const response = await fetch(`${CIERRE_API_URL}/rango?fecha_inicio=${fechaInicio}&fecha_final=${fechaFinal}&page=${page}`);
         const result = await response.json();
@@ -252,6 +302,8 @@ async function loadCierres(page = 1) {
         }
     } catch (error) {
         console.error('Error de red:', error);
+    } finally {
+        setCierreLoading(false);
     }
 }
 

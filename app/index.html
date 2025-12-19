@@ -6,6 +6,8 @@
     <title>Gestión de Inventario</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body>
     <!-- Navbar para móviles -->
@@ -32,13 +34,18 @@
                 <hr class="d-none d-md-block">
                 <ul class="nav nav-pills flex-column mb-auto">
                     <li class="nav-item">
-                        <a href="#" class="nav-link active" aria-current="page" id="productosLink">
-                            Productos
+                        <a href="#" class="nav-link active" aria-current="page" id="dashboardLink">
+                            <i class="bi bi-house-door me-2"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" id="productosLink">
+                            <i class="bi bi-box-seam me-2"></i>Productos
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="#" class="nav-link" id="cierresLink">
-                            Cierres
+                            <i class="bi bi-calendar-check me-2"></i>Cierres
                         </a>
                     </li>
                 </ul>
@@ -47,18 +54,27 @@
 
         <!-- Contenido Principal -->
         <div class="container-fluid p-4">
-            <h2 class="mb-4" id="pageTitle">Listado de Productos</h2>
+            <h2 class="mb-4" id="pageTitle">Dashboard</h2>
             
+            <!-- Sección Dashboard -->
+            <div id="dashboardSection">
+                <p>Dashboard en desarrollo...</p>
+            </div>
+
             <!-- Sección Productos -->
-            <div id="productosSection">
-                <div class="d-flex justify-content-between mb-3">
-                    <div class="d-flex">
-                        <input type="text" class="form-control me-2" id="searchInput" placeholder="Buscar por nombre de producto">
-                        <button class="btn btn-outline-secondary" onclick="searchProducts()">Buscar</button>
+            <div id="productosSection" style="display: none;">
+                <div class="mb-3">
+                    <div class="d-flex flex-column flex-sm-row mb-3">
+                        <input type="text" class="form-control me-sm-2 mb-2 mb-sm-0" id="searchInput" placeholder="Buscar por nombre de producto">
+                        <button class="btn btn-outline-secondary" onclick="searchProducts()">
+                            <i class="bi bi-search"></i> Buscar
+                        </button>
                     </div>
-                    <button class="btn btn-primary" onclick="openModal()">
-                        Nuevo Producto
-                    </button>
+                    <div class="d-flex flex-column flex-sm-row">
+                        <button class="btn btn-primary" onclick="openModal()">
+                            <i class="bi bi-plus-circle"></i> Nuevo Producto
+                        </button>
+                    </div>
                 </div>
 
                 <div class="table-responsive">
@@ -73,7 +89,13 @@
                             </tr>
                         </thead>
                         <tbody id="productTableBody">
-                            <!-- Los datos se cargarán aquí dinámicamente -->
+                            <tr id="loadingRow">
+                                <td colspan="5" class="text-center">
+                                    <div class="spinner-border" role="status">
+                                        <span class="visually-hidden">Cargando...</span>
+                                    </div>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -98,9 +120,15 @@
                         </div>
                     </div>
                     <div class="d-flex flex-column flex-sm-row">
-                        <button class="btn btn-secondary me-sm-2 mb-2 mb-sm-0" onclick="loadCierres()">Filtrar</button>
-                        <button class="btn btn-success me-sm-2 mb-2 mb-sm-0" onclick="exportToPDF()">Exportar PDF</button>
-                        <button class="btn btn-primary" onclick="openCierreModal()">Nuevo Cierre</button>
+                        <button class="btn btn-secondary me-sm-2 mb-2 mb-sm-0" onclick="loadCierres()">
+                            <i class="bi bi-funnel"></i> Filtrar
+                        </button>
+                        <button class="btn btn-success me-sm-2 mb-2 mb-sm-0" onclick="exportToPDF()">
+                            <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
+                        </button>
+                        <button class="btn btn-primary" onclick="openCierreModal()">
+                            <i class="bi bi-plus-circle"></i> Nuevo Cierre
+                        </button>
                     </div>
                 </div>
 
@@ -116,7 +144,13 @@
                             </tr>
                         </thead>
                         <tbody id="cierreTableBody">
-                            <!-- Los datos se cargarán aquí dinámicamente -->
+                            <tr id="cierreLoadingRow">
+                                <td colspan="5" class="text-center">
+                                    <div class="spinner-border" role="status">
+                                        <span class="visually-hidden">Cargando...</span>
+                                    </div>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
