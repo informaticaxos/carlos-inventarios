@@ -278,11 +278,11 @@
                 </div>
                 <div class="modal-body">
                     <input type="hidden" id="cierreId">
-                    <div class="mb-3">
+                    <div class="mb-3 position-relative">
                         <label class="form-label">Producto</label>
-                        <select class="form-select" id="cierreProducto" required>
-                            <option value="">Seleccione...</option>
-                        </select>
+                        <input type="text" class="form-control" id="cierreProductoInput" placeholder="Escriba para buscar..." autocomplete="off" required>
+                        <div class="list-group position-absolute w-100" id="cierreProductoList" style="z-index: 1055; max-height: 200px; overflow-y: auto; display: none;"></div>
+                        <input type="hidden" id="cierreProducto" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Fecha</label>

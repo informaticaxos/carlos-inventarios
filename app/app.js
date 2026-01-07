@@ -533,13 +533,47 @@ async function loadProductosForSelect() {
         const response = await fetch(`${API_URL}?all=true`);
         const result = await response.json();
         if (result.state === 1) {
-            const select = document.getElementById('cierreProducto');
-            select.innerHTML = '<option value="">Seleccione...</option>';
-            result.data.forEach(product => {
-                const option = document.createElement('option');
-                option.value = product.id_producto;
-                option.textContent = product.nombre_producto;
-                select.appendChild(option);
+            window.cierreProductosList = result.data;
+            const input = document.getElementById('cierreProductoInput');
+            const list = document.getElementById('cierreProductoList');
+            input.value = '';
+            document.getElementById('cierreProducto').value = '';
+            list.innerHTML = '';
+            list.style.display = 'none';
+
+            input.addEventListener('input', function() {
+                const term = input.value.trim().toLowerCase();
+                list.innerHTML = '';
+                if (!term) {
+                    list.style.display = 'none';
+                    return;
+                }
+                const filtered = window.cierreProductosList.filter(p => p.nombre_producto.toLowerCase().includes(term));
+                if (filtered.length === 0) {
+                    list.style.display = 'none';
+                    return;
+                }
+                filtered.forEach(product => {
+                    const item = document.createElement('button');
+                    item.type = 'button';
+                    item.className = 'list-group-item list-group-item-action';
+                    item.textContent = product.nombre_producto;
+                    item.dataset.id = product.id_producto;
+                    item.addEventListener('click', function() {
+                        input.value = product.nombre_producto;
+                        document.getElementById('cierreProducto').value = product.id_producto;
+                        list.style.display = 'none';
+                    });
+                    list.appendChild(item);
+                });
+                list.style.display = 'block';
+            });
+
+            // Ocultar lista si se hace click fuera
+            document.addEventListener('click', function(e) {
+                if (!input.contains(e.target) && !list.contains(e.target)) {
+                    list.style.display = 'none';
+                }
             });
         }
     } catch (error) {
@@ -555,6 +589,15 @@ async function saveCierre() {
         fecha: document.getElementById('cierreFecha').value,
         cantidad: document.getElementById('cierreCantidad').value
     };
+    // Validar que el producto exista
+    if (!data.fk_id_producto) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Producto no seleccionado',
+            text: 'Seleccione un producto válido de la lista.'
+        });
+        return;
+    }
 
     if (!data.fk_id_producto || !data.fecha || !data.cantidad) {
         Swal.fire({
