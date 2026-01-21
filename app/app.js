@@ -462,7 +462,7 @@ function renderCierreTable(cierres) {
     tbody.innerHTML = '';
 
     if (cierres.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center">No hay cierres registrados</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center">No hay cierres registrados</td></tr>';
         return;
     }
 
@@ -471,6 +471,7 @@ function renderCierreTable(cierres) {
         tr.innerHTML = `
             <td>${cierre.id_cierre_invetarios}</td>
             <td>${cierre.nombre_producto}</td>
+            <td>${cierre.unidad_medida_producto || ''}</td>
             <td>${cierre.fecha}</td>
             <td>${cierre.cantidad}</td>
             <td class="text-center">
@@ -499,11 +500,14 @@ function renderCierrePagination(pagination) {
 
 // Abrir modal para crear/editar cierre
 window.openCierreModal = async function(id = null) {
-    if (!cierreModal) return;
     await loadProductosForSelect();
     document.getElementById('cierreId').value = id || '';
     document.getElementById('cierreModalTitle').textContent = id ? 'Editar Cierre' : 'Nuevo Cierre';
-    
+
+    // Limpiar div de unidad de medida
+    const unidadDiv = document.getElementById('cierreUnidadDiv');
+    if (unidadDiv) unidadDiv.textContent = '';
+
     if (id) {
         // Cargar datos para editar
         try {
@@ -513,6 +517,14 @@ window.openCierreModal = async function(id = null) {
                 document.getElementById('cierreProducto').value = result.data.fk_id_producto;
                 document.getElementById('cierreFecha').value = result.data.fecha;
                 document.getElementById('cierreCantidad').value = result.data.cantidad;
+
+                // Mostrar unidad de medida del producto seleccionado
+                if (window.cierreProductosList) {
+                    const prod = window.cierreProductosList.find(p => p.id_producto == result.data.fk_id_producto);
+                    if (prod && unidadDiv) {
+                        unidadDiv.textContent = `Unidad de Medida: ${prod.unidad_medida_producto}`;
+                    }
+                }
             }
         } catch (error) {
             console.error('Error cargando cierre:', error);
@@ -523,7 +535,7 @@ window.openCierreModal = async function(id = null) {
         document.getElementById('cierreFecha').value = new Date().toISOString().split('T')[0];
         document.getElementById('cierreCantidad').value = '';
     }
-    
+
     cierreModal.show();
 }
 
@@ -544,13 +556,16 @@ async function loadProductosForSelect() {
             input.addEventListener('input', function() {
                 const term = input.value.trim().toLowerCase();
                 list.innerHTML = '';
+                const unidadDiv = document.getElementById('cierreUnidadDiv');
                 if (!term) {
                     list.style.display = 'none';
+                    if (unidadDiv) unidadDiv.textContent = '';
                     return;
                 }
                 const filtered = window.cierreProductosList.filter(p => p.nombre_producto.toLowerCase().includes(term));
                 if (filtered.length === 0) {
                     list.style.display = 'none';
+                    if (unidadDiv) unidadDiv.textContent = '';
                     return;
                 }
                 filtered.forEach(product => {
@@ -563,6 +578,10 @@ async function loadProductosForSelect() {
                         input.value = product.nombre_producto;
                         document.getElementById('cierreProducto').value = product.id_producto;
                         list.style.display = 'none';
+                        // Mostrar unidad de medida
+                        if (unidadDiv) {
+                            unidadDiv.textContent = `Unidad de Medida: ${product.unidad_medida_producto}`;
+                        }
                     });
                     list.appendChild(item);
                 });
